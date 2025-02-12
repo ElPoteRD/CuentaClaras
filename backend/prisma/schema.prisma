@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id              Int           @id @default(autoincrement())
+  nombre          String?
+  apellido        String?
+  email           String        @unique
+  contraseña  String        @map("contrasena")
+  fechaRegistro   DateTime      @default(now()) @map("fecha_registro")
+  avatar           String?
+  cuentas         Cuenta[]
+  transacciones   Transaccion[]
+  presupuestos    Presupuesto[]
+
+  @@map("Usuarios")
+}
+
+model Cuenta {
+  id             Int      @id @default(autoincrement())
+  nombre         String
+  tipo           TipoCuenta
+  saldoInicial   Decimal  @map("saldo_inicial")
+  moneda         String
+  fechaCreacion  DateTime @default(now()) @map("fecha_creacion")
+  usuarioId      Int
+  usuario        Usuario  @relation(fields: [usuarioId], references: [id])
+  transacciones  Transaccion[]
+
+  @@map("Cuentas")
+}
+
+enum TipoCuenta {
+  bancaria
+  credito
+  efectivo
+  inversion
+}
+
+model Categoria {
+  id            Int            @id @default(autoincrement())
+  nombre        String
+  transacciones Transaccion[]
+  presupuestos  Presupuesto[]
+
+  @@map("Categorias")
+}
+
+model Transaccion {
+  id           Int       @id @default(autoincrement())
+  tipo         TipoTransaccion
+  monto        Decimal
+  descripcion  String?
+  cuentaId     Int
+  usuarioId    Int
+  categoriaId  Int
+  cuenta       Cuenta    @relation(fields: [cuentaId], references: [id])
+  usuario      Usuario   @relation(fields: [usuarioId], references: [id])
+  categoria    Categoria @relation(fields: [categoriaId], references: [id])
+
+  @@map("Transacciones")
+}
+
+enum TipoTransaccion {
+  ingreso
+  gasto
+}
+
+model Presupuesto {
+  id           Int       @id @default(autoincrement())
+  monto        Decimal
+  fechaInicial DateTime  @map("fecha_inicial")
+  fechaFinal   DateTime  @map("fecha_final")
+  usuarioId    Int
+  categoriaId  Int
+  usuario      Usuario   @relation(fields: [usuarioId], references: [id])
+  categoria    Categoria @relation(fields: [categoriaId], references: [id])
+
+  @@map("Presupuestos")
+}
