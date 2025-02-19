@@ -13,80 +13,80 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Usuario {
+model User {
   id              Int           @id @default(autoincrement())
-  nombre          String?
-  apellido        String?
+  firstName       String?
+  lastName        String?
   email           String        @unique
-  contraseña  String        @map("contrasena")
-  fechaRegistro   DateTime      @default(now()) @map("fecha_registro")
-  avatar           String?
-  cuentas         Cuenta[]
-  transacciones   Transaccion[]
-  presupuestos    Presupuesto[]
+  password        String        @map("contrasena")
+  registrationDate DateTime     @default(now()) @map("fecha_registro")
+  avatar          String?
+  accounts        Account[]
+  transactions    Transaction[]
+  budgets         Budget[]
 
   @@map("Usuarios")
 }
 
-model Cuenta {
+model Account {
   id             Int      @id @default(autoincrement())
-  nombre         String
-  tipo           TipoCuenta
-  saldoInicial   Decimal  @map("saldo_inicial")
-  moneda         String
-  fechaCreacion  DateTime @default(now()) @map("fecha_creacion")
-  usuarioId      Int
-  usuario        Usuario  @relation(fields: [usuarioId], references: [id])
-  transacciones  Transaccion[]
+  name           String
+  type           AccountType
+  initialBalance Decimal  @map("saldo_inicial")
+  currency       String
+  creationDate   DateTime @default(now()) @map("fecha_creacion")
+  userId         Int
+  user           User     @relation(fields: [userId], references: [id])
+  transactions   Transaction[]
 
   @@map("Cuentas")
 }
 
-enum TipoCuenta {
-  bancaria
-  credito
-  efectivo
-  inversion
+enum AccountType {
+  bank
+  credit
+  cash
+  investment
 }
 
-model Categoria {
+model Category {
   id            Int            @id @default(autoincrement())
-  nombre        String
-  transacciones Transaccion[]
-  presupuestos  Presupuesto[]
+  name          String
+  transactions  Transaction[]
+  budgets       Budget[]
 
   @@map("Categorias")
 }
 
-model Transaccion {
+model Transaction {
   id           Int       @id @default(autoincrement())
-  tipo         TipoTransaccion
-  monto        Decimal
-  descripcion  String?
-  cuentaId     Int
-  usuarioId    Int
-  categoriaId  Int
-  cuenta       Cuenta    @relation(fields: [cuentaId], references: [id])
-  usuario      Usuario   @relation(fields: [usuarioId], references: [id])
-  categoria    Categoria @relation(fields: [categoriaId], references: [id])
+  type         TransactionType
+  amount       Decimal
+  description  String?
+  accountId    Int
+  userId       Int
+  categoryId   Int
+  account      Account    @relation(fields: [accountId], references: [id])
+  user         User       @relation(fields: [userId], references: [id])
+  category     Category   @relation(fields: [categoryId], references: [id])
 
   @@map("Transacciones")
 }
 
-enum TipoTransaccion {
-  ingreso
-  gasto
+enum TransactionType {
+  income
+  expense
 }
 
-model Presupuesto {
+model Budget {
   id           Int       @id @default(autoincrement())
-  monto        Decimal
-  fechaInicial DateTime  @map("fecha_inicial")
-  fechaFinal   DateTime  @map("fecha_final")
-  usuarioId    Int
-  categoriaId  Int
-  usuario      Usuario   @relation(fields: [usuarioId], references: [id])
-  categoria    Categoria @relation(fields: [categoriaId], references: [id])
+  amount       Decimal
+  startDate    DateTime  @map("fecha_inicial")
+  endDate      DateTime  @map("fecha_final")
+  userId       Int
+  categoryId   Int
+  user         User      @relation(fields: [userId], references: [id])
+  category     Category  @relation(fields: [categoryId], references: [id])
 
   @@map("Presupuestos")
 }
