@@ -14,32 +14,28 @@ datasource db {
 }
 
 model User {
-  id              Int           @id @default(autoincrement())
-  firstName       String?
-  lastName        String?
-  email           String        @unique
-  password        String        @map("contrasena")
-  registrationDate DateTime     @default(now()) @map("fecha_registro")
-  avatar          String?
-  accounts        Account[]
-  transactions    Transaction[]
-  budgets         Budget[]
-
-  @@map("Usuarios")
+  id               Int           @id @default(autoincrement())
+  firstName        String?
+  lastName         String?
+  email            String        @unique
+  password         String
+  registrationDate DateTime      @default(now())
+  avatar           String?
+  accounts         Account[]
+  transactions     Transaction[]
+  budgets          Budget[]
 }
 
 model Account {
-  id             Int      @id @default(autoincrement())
+  id             Int           @id @default(autoincrement())
   name           String
   type           AccountType
-  initialBalance Decimal  @map("saldo_inicial")
+  initialBalance Decimal
   currency       String
-  creationDate   DateTime @default(now()) @map("fecha_creacion")
+  creationDate   DateTime      @default(now())
   userId         Int
-  user           User     @relation(fields: [userId], references: [id])
+  user           User          @relation(fields: [userId], references: [id])
   transactions   Transaction[]
-
-  @@map("Cuentas")
 }
 
 enum AccountType {
@@ -50,27 +46,23 @@ enum AccountType {
 }
 
 model Category {
-  id            Int            @id @default(autoincrement())
-  name          String
-  transactions  Transaction[]
-  budgets       Budget[]
-
-  @@map("Categorias")
+  id           Int           @id @default(autoincrement())
+  name         String
+  transactions Transaction[]
+  budgets      Budget[]
 }
 
 model Transaction {
-  id           Int       @id @default(autoincrement())
-  type         TransactionType
-  amount       Decimal
-  description  String?
-  accountId    Int
-  userId       Int
-  categoryId   Int
-  account      Account    @relation(fields: [accountId], references: [id])
-  user         User       @relation(fields: [userId], references: [id])
-  category     Category   @relation(fields: [categoryId], references: [id])
-
-  @@map("Transacciones")
+  id          Int             @id @default(autoincrement())
+  type        TransactionType
+  amount      Decimal
+  description String?
+  accountId   Int
+  userId      Int
+  categoryId  Int
+  account     Account         @relation(fields: [accountId], references: [id])
+  user        User            @relation(fields: [userId], references: [id])
+  category    Category        @relation(fields: [categoryId], references: [id])
 }
 
 enum TransactionType {
@@ -79,14 +71,12 @@ enum TransactionType {
 }
 
 model Budget {
-  id           Int       @id @default(autoincrement())
-  amount       Decimal
-  startDate    DateTime  @map("fecha_inicial")
-  endDate      DateTime  @map("fecha_final")
-  userId       Int
-  categoryId   Int
-  user         User      @relation(fields: [userId], references: [id])
-  category     Category  @relation(fields: [categoryId], references: [id])
-
-  @@map("Presupuestos")
+  id         Int      @id @default(autoincrement())
+  amount     Decimal
+  startDate  DateTime
+  endDate    DateTime
+  userId     Int
+  categoryId Int
+  user       User     @relation(fields: [userId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
 }

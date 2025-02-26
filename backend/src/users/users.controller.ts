@@ -32,7 +32,7 @@ export class UsersController {
   async getUser(@Param('id', ParseIntPipe) id: number) {
     return await this.userService.getUserId(id);
   }
-
+  
   @UseGuards(JwtAuthGuard)
   @Patch('/:id')
   @ApiResponse({ status: 200, description: 'Return a update user' })

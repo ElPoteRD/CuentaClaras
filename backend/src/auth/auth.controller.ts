@@ -19,7 +19,7 @@ export class AuthController {
     }
 
     @ApiResponse({status: 200, description: 'Return a new user'})
-    @ApiResponse({status: 409, description: 'The username is in use'})
+    @ApiResponse({status: 409, description: 'The email is in use'})
     @ApiResponse({status: 500, description: 'Internal Server Error'})
     @Post('/register')
     async register(@Body() data: CreateUserDto){

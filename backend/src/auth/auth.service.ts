@@ -13,11 +13,12 @@ export class AuthService {
   ) {}
 
   /**
-   * * This function validete the username and password
+   * * This function validete the email and password
    * @param dataAuth
    */
   async validateUser(dataAuth: AuthDto) {
-    //validate username
+    //validate email
+    if (!dataAuth.email) throw new UnauthorizedException();
     const user = await this.userServices.getUserByEmail(dataAuth.email);
     if (!user) throw new UnauthorizedException();
     //Match
@@ -33,7 +34,7 @@ export class AuthService {
    * @param user
    */
   async login(user: UserEntity) {
-    const payload = { email: user.email, sub: user.id };
+    const payload = { userId: user.id, email: user.email };
     return {
       user,
       access_token: this.jwt.sign(payload),

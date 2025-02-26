@@ -75,11 +75,8 @@ export class UsersService {
       //Create user
       const newUser = await this.prisma.user.create({
         data: {
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          email: userData.email,
+          ...userData,
           password: hashedPassword,
-          avatar: userData.avatar,
         },
       });
       return newUser;
@@ -99,9 +96,7 @@ export class UsersService {
   async getUserByEmail(email: string): Promise<UserEntity | undefined> {
     try {
       const user = await this.prisma.user.findFirst({
-        where: {
-          email: email,
-        },
+        where: { email },
       });
       return user;
     } catch (error) {

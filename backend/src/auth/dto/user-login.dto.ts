@@ -10,7 +10,7 @@ export class UserLoginDto{
     id: number
 
     @ApiProperty({
-        description: 'Gmail of account',
+        description: 'Email of account',
         type: String
     })
     @IsString()
