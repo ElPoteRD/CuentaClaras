@@ -15,7 +15,7 @@ import cuentasLogo from "../../assets/CuentaClarasIcon.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ILoginForm } from "@/entities/auth";
-import { useLogin } from "@/hook/use-login";
+import { useLogin } from "@/hooks/use-login";
 
 export default function Login() {
     const navigate = useNavigate();

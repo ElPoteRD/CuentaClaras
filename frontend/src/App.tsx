@@ -3,6 +3,7 @@ import { Toaster } from 'sonner';
 import Home from "./page/home/Home"
 import Login from "./page/login/Login"
 import Register from "./page/register/Register"
+import Dashboard from "./page/dashboard/Dashboard";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Route path="/" element={<Home />}></Route>
         <Route path="/login" element={<Login />}></Route>
         <Route path="/register" element={<Register />}></Route>
+        <Route path="/dashboard" element={<Dashboard />}></Route>
       </Routes>
       <Toaster position="top-right" />
     </>

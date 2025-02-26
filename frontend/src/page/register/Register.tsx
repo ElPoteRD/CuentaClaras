@@ -14,7 +14,7 @@ import cuentasLogo from "../../assets/CuentaClarasIcon.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { IRegisterForm } from "@/entities/auth";
-import { register } from "@/hook/use-register";
+import { register } from "@/hooks/use-register";
 import { toast } from "sonner";
 
 
