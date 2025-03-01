@@ -1,4 +1,5 @@
 import { AccountType, CurrencyType } from '@prisma/client';
+import { TransactionEntity } from 'src/transaction/entities/transaction.entity';
 
 import { UserEntity } from 'src/users/entities/user';
 
@@ -10,5 +11,6 @@ export class AccountEntity {
   currency: CurrencyType;
   creationDate: Date;
   userId: number;
+  Transactions?: TransactionEntity[];
   user?: UserEntity;
 }

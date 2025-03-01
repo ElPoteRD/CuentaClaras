@@ -1,4 +1,5 @@
 import { AccountEntity } from 'src/account/entities/account.entity';
+import { TransactionEntity } from 'src/transaction/entities/transaction.entity';
 
 export class UserEntity {
   id: number;
@@ -9,5 +10,5 @@ export class UserEntity {
   registrationDate: Date;
   avatar?: string;
   Accounts?: AccountEntity[];
-
+  Transactions?: TransactionEntity[];
 }
