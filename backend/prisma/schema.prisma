@@ -59,7 +59,7 @@ enum CurrencyType {
   PEN
   ARS
   CLP
-  RD
+  DOP
 }
 
 model Category {

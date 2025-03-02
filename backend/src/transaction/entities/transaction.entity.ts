@@ -1,5 +1,6 @@
 import { TransactionType } from '@prisma/client';
 import { AccountEntity } from 'src/account/entities/account.entity';
+import { CategoryEntity } from 'src/category/entities/category.entity';
 import { UserEntity } from 'src/users/entities/user';
 
 export class TransactionEntity {
@@ -13,5 +14,5 @@ export class TransactionEntity {
   categoryId: number;;
   Account?: AccountEntity[];
   user?: UserEntity[];
-  //Debo agregar la categoria
+  Category?: CategoryEntity[];
 }
