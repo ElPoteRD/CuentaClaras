@@ -18,7 +18,7 @@ CREATE TABLE `Account` (
     `name` VARCHAR(191) NOT NULL,
     `type` ENUM('banco', 'crédito', 'dinero', 'inversión') NOT NULL,
     `initialBalance` DOUBLE NOT NULL,
-    `currency` ENUM('USD', 'EUR', 'COP', 'MXN', 'PEN', 'ARS', 'CLP', 'RD') NOT NULL,
+    `currency` ENUM('USD', 'EUR', 'COP', 'MXN', 'PEN', 'ARS', 'CLP', 'DOP', 'BRL', 'BOB', 'PYG', 'UYU', 'VES', 'GBP', 'JPY') NOT NULL,
     `creationDate` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `userId` INTEGER NOT NULL,
 
@@ -53,7 +53,7 @@ CREATE TABLE `Goal` (
     `name` VARCHAR(191) NOT NULL,
     `description` VARCHAR(191) NULL,
     `targetAmount` DOUBLE NOT NULL,
-    `currentType` ENUM('USD', 'EUR', 'COP', 'MXN', 'PEN', 'ARS', 'CLP', 'RD') NOT NULL,
+    `currentType` ENUM('USD', 'EUR', 'COP', 'MXN', 'PEN', 'ARS', 'CLP', 'DOP', 'BRL', 'BOB', 'PYG', 'UYU', 'VES', 'GBP', 'JPY') NOT NULL,
     `startDate` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `targetDate` DATETIME(3) NOT NULL,
     `status` ENUM('PENDIENTE', 'EN_PROGRESO', 'COMPLETADA', 'CANCELADA') NOT NULL DEFAULT 'PENDIENTE',

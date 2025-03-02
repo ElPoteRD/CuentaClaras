@@ -6,6 +6,8 @@ import { AuthModule } from './auth/auth.module';
 import { AccountModule } from './account/account.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { CategoryModule } from './category/category.module';
+import { GoalsModule } from './goals/goals.module';
+import { OpinionsModule } from './opinions/opinions.module';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import { CategoryModule } from './category/category.module';
     AccountModule,
     TransactionModule,
     CategoryModule,
+    GoalsModule,
+    OpinionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

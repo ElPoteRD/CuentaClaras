@@ -39,7 +39,7 @@ export const useProfile = () => {
           logoutSession();
           logout();
           toast.error(`Su sesión a expirado`);
-          navigate("/login");
+            navigate("/login");
         } else {
           toast.error("Error", { description: error.message });
         }
