@@ -3,8 +3,15 @@ import { UserEntity } from "./user";
 export interface AccountEntity {
   id: number;
   name: string;
-  balance: number;
+  type: "banco" | "crédito" | "dinero" | "inversión";
+  initialBalance: number;
+  currency: string;
+  creationDate: Date;
   userId: number;
-  user?: UserEntity[];
   Transactions?: TransactionEntity[];
+  user?: UserEntity;
+}
+export interface AccountRequest {
+  id: number;
+  userId: number;
 }

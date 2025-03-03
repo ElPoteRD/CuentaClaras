@@ -43,16 +43,15 @@ export class CreateAccountDto {
 
 export class DeleteAccountDto {
   @ApiProperty({
-    description: 'The id of the account',
-    example: 1
+    description: 'ID de la cuenta a eliminar',
+    example: 1,
   })
-  @IsNotEmpty()
   @IsNumber()
   accountId: number;
 
   @ApiProperty({
     description: 'User password for verification',
-    example: "tuPassword123"
+    example: 'tuPassword123',
   })
   @IsNotEmpty()
   @IsString()

@@ -73,6 +73,18 @@ export function AppSidebar() {
                     <span>Inicio</span>
                   </Link>
                 </Button>
+                <SidebarMenuItem>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  asChild
+                >
+                  <Link to="/account">
+                    <PieChart className="mr-2 h-4 w-4" />
+                    <span>Mis productos</span>
+                  </Link>
+                </Button>
+              </SidebarMenuItem>
               </SidebarMenuItem>
               {/* SubMenu de Transaciones */}
               <Collapsible open={isOpen} onOpenChange={setIsOpen}>

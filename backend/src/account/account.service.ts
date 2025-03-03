@@ -180,57 +180,38 @@ export class AccountService {
    ** Delete account by userId
    * @param userId
    */
-  async deleteAccount(deleteAccountDto: DeleteAccountDto, userId: number) {
+   async deleteAccount(accountId: number, userId: number) {
     try {
-      // Buscar el usuario y la cuenta
-      const user = await this.prisma.user.findUnique({
-        where: { id: userId },
-      });
-
-      if (!user) {
-        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-      }
-
-      // Verificar la contraseña
-      const isPasswordValid = await bcrypt.compare(
-        deleteAccountDto.password,
-        user.password,
-      );
-
-      if (!isPasswordValid) {
-        throw new HttpException('Incorrect password', HttpStatus.UNAUTHORIZED);
-      }
-
-      // Verificar que la cuenta pertenece al usuario
+      // Verificar que la cuenta existe y pertenece al usuario
       const account = await this.prisma.account.findFirst({
         where: {
-          id: deleteAccountDto.accountId,
+          id: accountId,
           userId: userId,
         },
-        include: {
-          user: {
-            select: { id: true, firstName: true, lastName: true, email: true },
-          },
-        },
       });
-
+  
       if (!account) {
         throw new HttpException(
-          'Account not found or unauthorized',
+          'Cuenta no encontrada o no autorizada',
           HttpStatus.NOT_FOUND,
         );
       }
-
-      // Eliminar la cuenta usando una transacción para asegurar integridad
+  
+      // Eliminar usando transacción para mantener integridad
       return await this.prisma.$transaction(async (prisma) => {
-        // Primero eliminar las transacciones asociadas
-        await prisma.transaction.deleteMany({
-          where: { accountId: deleteAccountDto.accountId },
+        // Eliminar metas asociadas
+        await prisma.goal.deleteMany({
+          where: { accountId: accountId },
         });
-
-        // Luego eliminar la cuenta
+  
+        // Eliminar transacciones asociadas
+        await prisma.transaction.deleteMany({
+          where: { accountId: accountId },
+        });
+  
+        // Eliminar la cuenta
         return await prisma.account.delete({
-          where: { id: deleteAccountDto.accountId },
+          where: { id: accountId },
         });
       });
     } catch (error) {
@@ -238,7 +219,7 @@ export class AccountService {
         throw error;
       }
       throw new HttpException(
-        `Error deleting account: ${error.message}`,
+        `Error al eliminar la cuenta: ${error.message}`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

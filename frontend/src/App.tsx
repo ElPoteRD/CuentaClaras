@@ -4,6 +4,7 @@ import Home from "./page/home/Home"
 import Login from "./page/login/Login"
 import Register from "./page/register/Register"
 import Dashboard from "./page/dashboard/Dashboard";
+import Account from "./page/cuentas/Account";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/login" element={<Login />}></Route>
         <Route path="/register" element={<Register />}></Route>
         <Route path="/dashboard" element={<Dashboard />}></Route>
+        <Route path="/account" element={<Account />}></Route>
       </Routes>
       <Toaster position="top-right" />
     </>
