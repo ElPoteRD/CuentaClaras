@@ -8,6 +8,8 @@ import Account from "./page/cuentas/Account";
 import Profile from "./page/profile/Profile"
 import Income from "./page/income/Income";
 import Expense from "./page/expense/Expense";
+import Report from "./page/reports/Report";
+import Configuration from "./page/configuration/Configuration";
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
         <Route path="/profile" element={<Profile />}></Route>
         <Route path="/income" element={<Income />}></Route>
         <Route path="/expense" element={<Expense />}></Route>
+        <Route path="/report" element={<Report />}></Route>
+        <Route path="/configuration" element={<Configuration />}></Route>
       </Routes>
       <Toaster position="top-right" />
     </>
