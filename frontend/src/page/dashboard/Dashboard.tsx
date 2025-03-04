@@ -1,10 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, TrendingUp, TrendingDown, Activity } from "lucide-react";
 import Layout from "../Layout";
+import { useAccount } from "@/hooks/use-account";
 
 
 export default function Dashboard() {
-
+  const { accounts } = useAccount();
+  const totalBalance = accounts.reduce((acc, account) => {
+    return acc + account.initialBalance;
+  }, 0);
   return (
     <Layout>
       <div className="flex flex-1 flex-col gap-4 p-4 bg-gray-50">
@@ -16,8 +20,7 @@ export default function Dashboard() {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0.00</div>
-              <p className="text-xs text-muted-foreground">0.00</p>
+              <div className="text-2xl font-bold">${totalBalance.toFixed(2)}</div>
             </CardContent>
           </Card>
           <Card>

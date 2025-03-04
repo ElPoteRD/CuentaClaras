@@ -74,17 +74,17 @@ export function AppSidebar() {
                   </Link>
                 </Button>
                 <SidebarMenuItem>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start"
-                  asChild
-                >
-                  <Link to="/account">
-                    <PieChart className="mr-2 h-4 w-4" />
-                    <span>Mis productos</span>
-                  </Link>
-                </Button>
-              </SidebarMenuItem>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start"
+                    asChild
+                  >
+                    <Link to="/account">
+                      <PieChart className="mr-2 h-4 w-4" />
+                      <span>Mis productos</span>
+                    </Link>
+                  </Button>
+                </SidebarMenuItem>
               </SidebarMenuItem>
               {/* SubMenu de Transaciones */}
               <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -158,7 +158,9 @@ export function AppSidebar() {
             <Button variant="ghost" className="w-full justify-start">
               <Avatar className="h-8 w-8 mr-2">
                 <AvatarImage src="" alt="Usuario" />
-                <AvatarFallback>{profile?.firstName}</AvatarFallback>
+                <AvatarFallback>
+                  {profile?.firstName?.charAt(0)?.toUpperCase()}
+                  {profile?.lastName?.charAt(0)?.toUpperCase() || ''}</AvatarFallback>
               </Avatar>
               <span>Mi Cuenta</span>
             </Button>
@@ -166,7 +168,7 @@ export function AppSidebar() {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <Link to="/perfil">
+            <Link to="/profile">
               <DropdownMenuItem>
                 <User className="mr-2 h-4 w-4" />
                 <span>Perfil</span>
@@ -174,7 +176,7 @@ export function AppSidebar() {
             </Link>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={closeSession}
-                className="cursor-pointer">
+              className="cursor-pointer">
               <LogOut className="mr-2 h-4 w-4" />
               <span
               >Cerrar Sesión</span>

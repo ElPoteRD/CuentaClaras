@@ -35,7 +35,6 @@ export default function Account() {
         setIsModalOpen(false)
         refreshAccounts() // Refrescamos las cuentas al cerrar el modal
     }
-
     if (loading) {
         return (
             <Layout>
@@ -45,12 +44,9 @@ export default function Account() {
             </Layout>
         )
     }
-
-    // Función para ver detalles de la cuenta
     const handleViewDetails = (accountId: number) => {
         navigate(`/account/${accountId}`);
     };
-
     // Función para obtener el ícono según el tipo de cuenta
     const getAccountTypeIcon = (type: AccountEntity["type"]) => {
         switch (type) {
@@ -64,8 +60,6 @@ export default function Account() {
                 return <PiggyBank className="h-4 w-4" />;
         }
     };
-
-    // Renderizado principal
     return (
         <Layout>
             <div className="container mx-auto p-6">

@@ -20,7 +20,7 @@ model User {
   email            String        @unique
   password         String
   registrationDate DateTime      @default(now())
-  avatar           String?
+  avatar           String?       @db.Text
   accounts         Account[]
   transactions     Transaction[]
   Goal             Goal[]
