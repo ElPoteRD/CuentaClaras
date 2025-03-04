@@ -55,7 +55,7 @@ export class TransactionController {
     description: 'Transaction not found',
   })
   async getTransactionById(@Param('id', ParseIntPipe) id: number) {
-    return await this.transactionService.getTransactionById(+id);
+    return await this.transactionService.getTransactionById(id);
   }
   @UseGuards(JwtAuthGuard)
   @Patch(':id')

@@ -80,7 +80,7 @@ export function AppSidebar() {
                     asChild
                   >
                     <Link to="/account">
-                      <PieChart className="mr-2 h-4 w-4" />
+                      <User className="mr-2 h-4 w-4" />
                       <span>Mis productos</span>
                     </Link>
                   </Button>
@@ -106,7 +106,7 @@ export function AppSidebar() {
                     className="w-full justify-start"
                     asChild
                   >
-                    <Link to="/transaciones/ingreso">
+                    <Link to="/income">
                       <Banknote className="mr-2 h-4 w-4" />
                       <span>Ingresos</span>
                     </Link>
@@ -116,7 +116,7 @@ export function AppSidebar() {
                     className="w-full justify-start"
                     asChild
                   >
-                    <Link to="/transaciones/gasto">
+                    <Link to="/expense">
                       <CreditCard className="mr-2 h-4 w-4" />
                       <span>Gastos</span>
                     </Link>

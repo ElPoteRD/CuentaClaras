@@ -17,7 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Layout from "../page/Layout";
+import Layout from "../Layout";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,6 +35,7 @@ const profileFormSchema = z.object({
   email: z.string().email({
     message: "Por favor ingresa un email válido.",
   }),
+  avatar: z.string().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema> & { token?: string };
@@ -50,6 +51,7 @@ export default function Profile() {
       firstName: profile?.firstName || "",
       lastName: profile?.lastName || "",
       email: profile?.email || "",
+      avatar: profile?.avatar || ""
     },
   });
 
@@ -59,6 +61,7 @@ export default function Profile() {
         firstName: profile.firstName || "",
         lastName: profile.lastName || "",
         email: profile.email || "",
+        avatar: profile?.avatar || ""
       });
     }
   }, [profile, form]);
@@ -90,6 +93,7 @@ export default function Profile() {
         firstName: data.firstName?.trim() || "",
         lastName: data.lastName?.trim() || "",
         email: data.email.trim(),
+        avatar: data.avatar,
       };
 
       // Validar datos requeridos
