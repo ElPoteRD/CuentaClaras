@@ -130,7 +130,7 @@ export function AppSidebar() {
                   className="w-full justify-start"
                   asChild
                 >
-                  <Link to="/reporte">
+                  <Link to="/report">
                     <PieChart className="mr-2 h-4 w-4" />
                     <span>Reportes</span>
                   </Link>
@@ -142,7 +142,7 @@ export function AppSidebar() {
                   className="w-full justify-start"
                   asChild
                 >
-                  <Link to="/configuracion">
+                  <Link to="/configuration">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Configuraciones</span>
                   </Link>
