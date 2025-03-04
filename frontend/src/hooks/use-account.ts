@@ -138,6 +138,16 @@ export const useAccount = () => {
     }
   };
 
+  const refetchAccounts = async () => {
+    // Lógica para recargar las cuentas y sus balances
+    try {
+      const response = await accountService.getAccounts(token);
+      setAccounts(response.data);
+    } catch (error) {
+      toast.error("Error al actualizar los balances");
+    }
+  };
+
   return {
     accounts,
     isLoading,
@@ -147,5 +157,6 @@ export const useAccount = () => {
     updateAccount: handleUpdateAccount,
     deleteAccount: handleDeleteAccount,
     refreshAccounts: handleGetAccounts,
+    refetchAccounts
   };
 };
