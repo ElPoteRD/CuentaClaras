@@ -20,63 +20,116 @@ model User {
   email            String        @unique
   password         String
   registrationDate DateTime      @default(now())
-  avatar           String?
+  avatar           String?       @db.Text
   accounts         Account[]
   transactions     Transaction[]
-  budgets          Budget[]
+  Goal             Goal[]
+  opinions         Opinions[]
+
+  @@map("User")
 }
 
 model Account {
   id             Int           @id @default(autoincrement())
   name           String
   type           AccountType
-  initialBalance Decimal
-  currency       String
+  initialBalance Float
+  currency       CurrencyType
   creationDate   DateTime      @default(now())
   userId         Int
   user           User          @relation(fields: [userId], references: [id])
   transactions   Transaction[]
+  Goals          Goal[]
+
+  @@map("Account")
 }
 
 enum AccountType {
-  bank
-  credit
-  cash
-  investment
+  banco
+  crédito
+  dinero
+  inversión
+}
+
+enum CurrencyType {
+  USD
+  EUR
+  COP
+  MXN
+  PEN
+  ARS
+  CLP
+  DOP
+  BRL
+  BOB
+  PYG
+  UYU
+  VES
+  GBP
+  JPY
 }
 
 model Category {
   id           Int           @id @default(autoincrement())
   name         String
   transactions Transaction[]
-  budgets      Budget[]
+
+  @@map("Category")
 }
 
 model Transaction {
   id          Int             @id @default(autoincrement())
   type        TransactionType
-  amount      Decimal
+  amount      Float
   description String?
+  date        DateTime        @default(now()) @map("creationDate")
   accountId   Int
   userId      Int
   categoryId  Int
   account     Account         @relation(fields: [accountId], references: [id])
   user        User            @relation(fields: [userId], references: [id])
   category    Category        @relation(fields: [categoryId], references: [id])
+
+  @@map("Transaction")
 }
 
 enum TransactionType {
-  income
-  expense
+  Ingreso
+  Gasto
 }
 
-model Budget {
-  id         Int      @id @default(autoincrement())
-  amount     Decimal
-  startDate  DateTime
-  endDate    DateTime
-  userId     Int
-  categoryId Int
-  user       User     @relation(fields: [userId], references: [id])
-  category   Category @relation(fields: [categoryId], references: [id])
+model Goal {
+  id           Int          @id @default(autoincrement())
+  name         String
+  description  String?
+  targetAmount Float
+  currentType  CurrencyType
+  startDate    DateTime     @default(now())
+  targetDate   DateTime
+  status       GoalStatus   @default(PENDIENTE)
+  userId       Int
+  accountId    Int
+  user         User         @relation(fields: [userId], references: [id])
+  account      Account?     @relation(fields: [accountId], references: [id])
+
+  @@map("Goal")
+}
+
+enum GoalStatus {
+  PENDIENTE
+  EN_PROGRESO
+  COMPLETADA
+  CANCELADA
+}
+
+model Opinions {
+  id        Int       @id @default(autoincrement())
+  opinion   String
+  rating    Int
+  createdAt DateTime? @default(now())
+  updatedAt DateTime?
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@map("Opinions")
 }

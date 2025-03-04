@@ -32,13 +32,13 @@ export class UsersController {
   async getUser(@Param('id', ParseIntPipe) id: number) {
     return await this.userService.getUserId(id);
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @Patch('/:id')
   @ApiResponse({ status: 200, description: 'Return a update user' })
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 500, description: 'Internal Server Error' })
-  async patchUser(
+  async updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserDto,
   ) {
@@ -50,7 +50,7 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Return a update user' })
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 500, description: 'Internal Server Error' })
-  async patchPasswordUser(
+  async updatePassword(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdatePasswordDto,
   ) {

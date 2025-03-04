@@ -1,5 +1,6 @@
-import { BudgetEntity } from "./budget";
 import { AccountEntity } from "./account";
+import { GoalEntity } from "./goals";
+import { OpinionEntity } from "./opinion";
 import { TransactionEntity } from "./transaction";
 export interface UserEntity {
   id: number;
@@ -9,7 +10,8 @@ export interface UserEntity {
   password?: string;
   registrationDate: Date;
   avatar?: string;
-  Budgets?: BudgetEntity[];
   Accounts?: AccountEntity[];
   Transactions?: TransactionEntity[];
+  Goals?: GoalEntity[];
+  Opinions?: OpinionEntity[];
 }

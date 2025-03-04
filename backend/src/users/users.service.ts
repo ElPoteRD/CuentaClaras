@@ -12,6 +12,7 @@ import { PrismaService } from 'src/database/prisma.service';
 import { UserEntity } from './entities/user';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
+
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
@@ -115,26 +116,38 @@ export class UsersService {
    */
   async updateUser(id: number, dataUser: UpdateUserDto): Promise<UserEntity> {
     try {
-      const updateUser = await this.prisma.user.update({
+      const existingUser = await this.prisma.user.findUnique({
+        where: { id }
+      });
+
+      if (!existingUser) {
+        throw new NotFoundException(`Usuario no encontrado con id ${id}`);
+      }
+      return await this.prisma.user.update({
+        where: { id },
         data: {
           firstName: dataUser.firstName,
           lastName: dataUser.lastName,
           email: dataUser.email,
-          avatar: dataUser.avatar,
+          avatar: dataUser.avatar
         },
-        where: {
-          id,
-        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          registrationDate: true,
+          avatar: true
+        }
       });
-      return updateUser;
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError)
-        throw new NotFoundException(`The user with id ${id} is not found`);
-      if (error instanceof Error)
-        throw new HttpException(
-          error.message,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Error al actualizar el usuario',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
   }
 
