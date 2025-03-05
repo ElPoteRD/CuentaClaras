@@ -24,11 +24,6 @@ export default function Expense() {
     (transaction) => transaction.type === "Gasto"
   );
 
-  // Calcular el total de gastos
-  const totalGastos = gastos.reduce(
-    (total, gasto) => total + gasto.amount,
-    0
-  );
 
   // Calcular el porcentaje de cambio del mes anterior
   const calcularPorcentajeCambio = () => {

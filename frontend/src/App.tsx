@@ -4,12 +4,13 @@ import Home from "./page/home/Home"
 import Login from "./page/login/Login"
 import Register from "./page/register/Register"
 import Dashboard from "./page/dashboard/Dashboard";
-import Account from "./page/cuentas/Account";
+import Account from "./page/account/Account";
 import Profile from "./page/profile/Profile"
 import Income from "./page/income/Income";
 import Expense from "./page/expense/Expense";
-import Report from "./page/reports/Report";
+import Reporte from "./page/reports/Report";
 import Configuration from "./page/configuration/Configuration";
+
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
         <Route path="/profile" element={<Profile />}></Route>
         <Route path="/income" element={<Income />}></Route>
         <Route path="/expense" element={<Expense />}></Route>
-        <Route path="/report" element={<Report />}></Route>
+        <Route path="/report" element={<Reporte />}></Route>
         <Route path="/configuration" element={<Configuration />}></Route>
       </Routes>
       <Toaster position="top-right" />

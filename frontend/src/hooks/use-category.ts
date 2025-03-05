@@ -6,7 +6,7 @@ export const useCategory = () => {
   const [categories, setCategories] = useState<CategoryEntity[]>([]);
   const [selectedCategory, setSelectedCategory] =
     useState<CategoryEntity | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const getToken = () => {
@@ -19,7 +19,7 @@ export const useCategory = () => {
     setIsLoading(true);
     try {
       const token = getToken();
-      const response = await categoryService.getCategories(token);
+      const response = await categoryService.getCategory(token);
       setCategories(response.data);
       setError(null);
     } catch (err) {
@@ -56,7 +56,7 @@ export const useCategory = () => {
     try {
       const token = getToken();
       const response = await categoryService.createCategory(data, token);
-      setCategories((prev) => [...prev, response.data]);
+      await fetchCategories();
       toast.success("Categoría creada exitosamente");
       return response.data;
     } catch (err) {
@@ -64,7 +64,7 @@ export const useCategory = () => {
         err instanceof Error ? err.message : "Error al crear la categoría"
       );
       toast.error("Error al crear la categoría");
-      return null;
+      throw err;
     } finally {
       setIsLoading(false);
     }

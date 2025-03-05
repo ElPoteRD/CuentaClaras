@@ -63,7 +63,7 @@ export default function Configuration() {
     // Simular una llamada a la API
     setTimeout(() => {
       setIsLoading(false);
-      toast.success("Configuración guardada");
+      toast.success("Configuracion actualizada correctamente.");
       console.log(data);
     }, 1000);
   }
@@ -152,48 +152,6 @@ export default function Configuration() {
                     <FormDescription>
                       Activa el modo oscuro para una experiencia visual más
                       cómoda en entornos con poca luz.
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="notifications"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base">Notificaciones</FormLabel>
-                    <FormDescription>
-                      Recibe notificaciones sobre tus transacciones y
-                      actualizaciones importantes.
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="weeklyReport"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base">Reporte semanal</FormLabel>
-                    <FormDescription>
-                      Recibe un resumen semanal de tus finanzas por correo
-                      electrónico.
                     </FormDescription>
                   </div>
                   <FormControl>
