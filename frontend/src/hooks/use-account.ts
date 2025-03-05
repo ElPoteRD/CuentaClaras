@@ -10,6 +10,7 @@ import { AccountEntity } from "@/entities/account";
 import { toast } from "sonner";
 import useStore from "@/context/useStore";
 import { useLogin } from "./use-login";
+import * as accountService from "@/service/account-service";
 import { useNavigate } from "react-router-dom";
 
 export const useAccount = () => {
@@ -141,7 +142,8 @@ export const useAccount = () => {
   const refetchAccounts = async () => {
     // Lógica para recargar las cuentas y sus balances
     try {
-      const response = await accountService.getAccounts(token);
+      const existToken = JSON.parse(localStorage.getItem("login-token") ?? "");
+      const response = await accountService.getAllAccount(existToken.access_token);
       setAccounts(response.data);
     } catch (error) {
       toast.error("Error al actualizar los balances");

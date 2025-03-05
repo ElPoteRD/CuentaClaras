@@ -3,25 +3,45 @@ import { useAccount } from "@/hooks/use-account"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CreditCard, Wallet, Building2, PiggyBank } from "lucide-react"
+import { CreditCard, Wallet, Building2, PiggyBank, PlusCircle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useNavigate } from "react-router-dom"
 import { NewAccountModal } from "@/components/new-account-modal"
 import Layout from "../Layout"
 import { AccountEntity } from "@/entities/account"
-
+import { NewCategoryModal } from "@/components/new-category-modal";
+import { useCategory } from "@/hooks/use-category";
 
 export default function Account() {
     const navigate = useNavigate()
     const [isModalOpen, setIsModalOpen] = useState(false)
-    
-    // Hook de cuentas - ahora usamos directamente accounts del hook
+    const [loading, setLoading] = useState(true)
+    const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+
     const {
         accounts,
-        loading,
         error,
-        refreshAccounts // Añadimos la función de refresco
+        refreshAccounts
     } = useAccount()
+    const { categories, fetchCategories } = useCategory();
+
+    // Efecto para cargar las cuentas
+    useEffect(() => {
+        if (accounts.length > 0) {
+            setLoading(false);
+        }
+    }, [accounts]);
+
+    // Efecto para cargar las categorías
+    useEffect(() => {
+        fetchCategories();
+    }, [fetchCategories]);
+
+    // Manejador para cerrar el modal de categorías
+    const handleCategoryModalClose = () => {
+        setIsCategoryModalOpen(false);
+        fetchCategories(); // Actualizamos las categorías al cerrar el modal
+    };
 
     // Calcular balance total
     const totalBalance = accounts.reduce((sum, account) => {
@@ -70,7 +90,7 @@ export default function Account() {
                             <h1 className="text-3xl font-bold">Cuentas y Productos</h1>
                             <p className="text-muted-foreground">Gestiona tus cuentas bancarias y productos financieros</p>
                         </div>
-                        <Button onClick={() => setIsModalOpen(true)}>Agregar Cuenta</Button>
+                        <Button onClick={() => setIsModalOpen(true)}><PlusCircle />Agregar Cuenta</Button>
                     </div>
                     <Card>
                         <CardHeader>
@@ -81,12 +101,11 @@ export default function Account() {
                             <div className="text-3xl font-bold">${totalBalance.toFixed(2)}</div>
                         </CardContent>
                     </Card>
-
                     <Tabs defaultValue="cuentas" className="space-y-4">
                         <TabsList>
-                            <TabsTrigger value="cuentas">Todas las Cuentas</TabsTrigger>
-                            <TabsTrigger value="tarjetas">Tarjetas</TabsTrigger>
-                            <TabsTrigger value="inversiones">Inversiones</TabsTrigger>
+                            <TabsTrigger value="cuentas">Mis Cuentas</TabsTrigger>
+                            <TabsTrigger value="inversiones">Mis metas Financieras</TabsTrigger>
+                            <TabsTrigger value="category">Categorias</TabsTrigger>
                         </TabsList>
                         <TabsContent value="cuentas" className="space-y-4">
                             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -135,7 +154,7 @@ export default function Account() {
                         </TabsContent>
 
                         {/* Modificamos los filtros para las pestañas */}
-                        <TabsContent value="tarjetas">
+                        <TabsContent value="categorias">
                             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                                 {accounts
                                     .filter((account) => account.type === "crédito")
@@ -229,11 +248,40 @@ export default function Account() {
                                     ))}
                             </div>
                         </TabsContent>
+                        <TabsContent value="category">
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-2xl font-bold">Categorías</h2>
+                                <Button onClick={() => setIsCategoryModalOpen(true)}>
+                                    <PlusCircle className="mr-2 h-4 w-4" /> Nueva Categoría
+                                </Button>
+                            </div>
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                {categories.map((category) => (
+                                    <Card key={category.id}>
+                                        <CardHeader>
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center space-x-2">
+
+                                                    <CardTitle>{category.name}</CardTitle>
+                                                </div>
+
+                                            </div>
+                                        </CardHeader>
+
+                                    </Card>
+                                ))}
+                            </div>
+                        </TabsContent>
                     </Tabs>
                 </div>
                 <NewAccountModal
                     isOpen={isModalOpen}
-                    onClose={handleModalClose} // Usamos la nueva función
+                    onClose={handleModalClose}
+                    onAddAccount={refreshAccounts}
+                />
+                <NewCategoryModal
+                    isOpen={isCategoryModalOpen}
+                    onClose={handleCategoryModalClose}
                 />
             </div>
         </Layout>

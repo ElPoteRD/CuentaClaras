@@ -1,145 +1,160 @@
-import { jsPDF } from "jspdf"
-import "jspdf-autotable"
-import * as XLSX from "xlsx"
-import FileSaver from "file-saver"
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+import * as XLSX from "xlsx";
+import FileSaver from "file-saver";
 
 export interface ReportData {
-  fecha: string
-  tipo: string
-  categoria: string
-  descripcion: string
-  monto: number
+  fecha: string;
+  tipo: string;
+  categoria: string;
+  descripcion: string;
+  monto: number;
+  moneda: string;
+  cuenta: string;
 }
 
 export interface ReportOptions {
-  dateRange: { from: Date; to: Date } | undefined
-  type: string
-  includeIncome: boolean
-  includeExpenses: boolean
-  includeBalance: boolean
-  includeCategories: boolean
+  dateRange: { from: Date; to: Date } | undefined;
+  type: 'resumen' | 'detallado' | 'categorias';
+  includeIncome: boolean;
+  includeExpenses: boolean;
+  includeBalance: boolean;
+  includeCategories: boolean;
 }
 
 export const generatePDF = async (data: ReportData[], options: ReportOptions) => {
-  // Crear nuevo documento PDF
-  const doc = new jsPDF()
+  const doc = new jsPDF();
+  
+  // Configuración de cabecera
+  doc.setFont("helvetica", "bold");
+  doc.setFillColor(52, 152, 219);
+  doc.rect(0, 0, doc.internal.pageSize.width, 40, "F");
+  
+  // Título y fecha
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(24);
+  doc.text("Reporte Financiero", 14, 25);
+  
+  // Agregar meta información
+  doc.setProperties({
+    title: 'Reporte Financiero',
+    subject: 'Reporte de transacciones',
+    author: 'CuentaClaras',
+    keywords: 'finanzas, reporte, transacciones',
+    creator: 'CuentaClaras App'
+  });
 
-  // Configurar fuentes
-  doc.setFont("helvetica", "bold")
+  // Agrupar por moneda
+  const groupedByMoneda = data.reduce((acc, item) => {
+    if (!acc[item.moneda]) {
+      acc[item.moneda] = [];
+    }
+    acc[item.moneda].push(item);
+    return acc;
+  }, {} as Record<string, ReportData[]>);
 
-  // Añadir logo o imagen de cabecera (usando un rectángulo como placeholder)
-  doc.setFillColor(52, 152, 219) // Color azul corporativo
-  doc.rect(0, 0, doc.internal.pageSize.width, 40, "F")
+  // Generar resumen por moneda
+  Object.entries(groupedByMoneda).forEach(([moneda, items], index) => {
+    const yPosition = 90 + (index * 60);
+    
+    const totalIngresos = items
+      .filter(item => item.tipo === "Ingreso")
+      .reduce((sum, item) => sum + item.monto, 0);
+      
+    const totalGastos = items
+      .filter(item => item.tipo === "Gasto")
+      .reduce((sum, item) => sum + Math.abs(item.monto), 0);
+      
+    const balance = totalIngresos - totalGastos;
 
-  // Añadir título
-  doc.setTextColor(255, 255, 255) // Texto blanco
-  doc.setFontSize(24)
-  doc.text("Reporte Financiero", 14, 25)
+    // Cajas de resumen por moneda
+    doc.setFillColor(241, 245, 249);
+    doc.rect(14, yPosition, 180, 40, "F");
+    
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(14);
+    doc.text(`Resumen en ${moneda}`, 20, yPosition + 15);
+    
+    doc.setFontSize(12);
+    doc.text(`Ingresos: ${totalIngresos.toLocaleString('es-ES')} ${moneda}`, 20, yPosition + 25);
+    doc.text(`Gastos: ${totalGastos.toLocaleString('es-ES')} ${moneda}`, 90, yPosition + 25);
+    doc.text(`Balance: ${balance.toLocaleString('es-ES')} ${moneda}`, 160, yPosition + 25);
+  });
 
-  // Añadir fecha y período
-  doc.setFontSize(12)
-  doc.setTextColor(255, 255, 255)
-  const currentDate = new Date().toLocaleDateString()
-  doc.text(`Generado el: ${currentDate}`, doc.internal.pageSize.width - 60, 15)
+  // Tabla detallada por moneda
+  let currentY = 200;
+  Object.entries(groupedByMoneda).forEach(([moneda, items]) => {
+    // Título de la sección
+    doc.setFontSize(14);
+    doc.text(`Transacciones en ${moneda}`, 14, currentY);
+    currentY += 10;
 
-  if (options.dateRange?.from && options.dateRange?.to) {
-    doc.text(
-      `Período: ${options.dateRange.from.toLocaleDateString()} - ${options.dateRange.to.toLocaleDateString()}`,
-      14,
-      35,
-    )
-  }
-
-  // Resetear color de texto para el contenido
-  doc.setTextColor(0, 0, 0)
-
-  // Calcular totales para el resumen
-  const totalIngresos = data.filter((item) => item.monto > 0).reduce((sum, item) => sum + item.monto, 0)
-  const totalGastos = data.filter((item) => item.monto < 0).reduce((sum, item) => sum + Math.abs(item.monto), 0)
-  const balance = totalIngresos - totalGastos
-
-  // Añadir resumen en cajas
-  doc.setFillColor(241, 245, 249) // Color de fondo suave
-  doc.rect(14, 50, 60, 30, "F")
-  doc.rect(80, 50, 60, 30, "F")
-  doc.rect(146, 50, 60, 30, "F")
-
-  // Títulos de las cajas
-  doc.setFontSize(10)
-  doc.setFont("helvetica", "bold")
-  doc.text("INGRESOS", 24, 60)
-  doc.text("GASTOS", 90, 60)
-  doc.text("BALANCE", 156, 60)
-
-  // Valores
-  doc.setFontSize(12)
-  doc.setFont("helvetica", "normal")
-  doc.text(`$${totalIngresos.toFixed(2)}`, 24, 70)
-  doc.text(`$${totalGastos.toFixed(2)}`, 90, 70)
-  doc.text(`$${balance.toFixed(2)}`, 156, 70)
-
-  // Preparar datos para la tabla
-  const tableData = data.map((item) => [
-    new Date(item.fecha).toLocaleDateString(),
-    item.tipo,
-    item.categoria,
-    item.descripcion,
-    {
-      content: `$${Math.abs(item.monto).toFixed(2)}`,
-      styles: {
-        textColor: item.monto > 0 ? [46, 125, 50] : [211, 47, 47],
-        halign: "right",
+    // Configurar tabla
+    (doc as any).autoTable({
+      head: [["Fecha", "Tipo", "Categoría", "Cuenta", "Descripción", "Monto"]],
+      body: items.map(item => [
+        new Date(item.fecha).toLocaleDateString('es-ES'),
+        item.tipo,
+        item.categoria,
+        item.cuenta,
+        item.descripcion,
+        {
+          content: `${Math.abs(item.monto).toLocaleString('es-ES')} ${item.moneda}`,
+          styles: {
+            textColor: item.tipo === "Ingreso" ? [46, 125, 50] : [211, 47, 47],
+            halign: 'right'
+          }
+        }
+      ]),
+      startY: currentY,
+      styles: { fontSize: 10 },
+      headStyles: {
+        fillColor: [52, 152, 219],
+        textColor: 255,
+        fontStyle: 'bold'
       },
-    },
-  ])
+      columnStyles: {
+        0: { cellWidth: 25 },
+        1: { cellWidth: 20 },
+        2: { cellWidth: 30 },
+        3: { cellWidth: 30 },
+        4: { cellWidth: 'auto' },
+        5: { cellWidth: 30, halign: 'right' }
+      }
+    });
 
-  // Configurar y añadir tabla
-  ;(doc as any).autoTable({
-    head: [["Fecha", "Tipo", "Categoría", "Descripción", "Monto"]],
-    body: tableData,
-    startY: 90,
-    styles: {
-      fontSize: 10,
-      cellPadding: 5,
-    },
-    headStyles: {
-      fillColor: [52, 152, 219],
-      textColor: 255,
-      fontSize: 10,
-      fontStyle: "bold",
-    },
-    alternateRowStyles: {
-      fillColor: [241, 245, 249],
-    },
-    columnStyles: {
-      0: { cellWidth: 25 },
-      1: { cellWidth: 25 },
-      2: { cellWidth: 35 },
-      3: { cellWidth: "auto" },
-      4: { cellWidth: 25, halign: "right" },
-    },
-  })
+    currentY = (doc as any).lastAutoTable.finalY + 20;
+    
+    // Agregar nueva página si es necesario
+    if (currentY > doc.internal.pageSize.height - 40) {
+      doc.addPage();
+      currentY = 20;
+    }
+  });
 
-  // Añadir pie de página
-  const pageCount = (doc as any).internal.getNumberOfPages()
-  doc.setFontSize(8)
+  // Agregar pie de página
+  const pageCount = (doc as any).internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
-    doc.setPage(i)
-    doc.text(`Página ${i} de ${pageCount}`, doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 10, {
-      align: "center",
-    })
+    doc.setPage(i);
+    doc.setFontSize(8);
+    doc.text(
+      `Página ${i} de ${pageCount}`,
+      doc.internal.pageSize.width / 2,
+      doc.internal.pageSize.height - 10,
+      { align: "center" }
+    );
   }
 
-  return doc.save("reporte-financiero.pdf")
-}
+  return doc.save(`reporte-financiero-${new Date().toISOString().slice(0,10)}.pdf`);
+};
 
 export const printReport = async (data: ReportData[], options: ReportOptions) => {
-  const printWindow = window.open("", "_blank")
-  if (!printWindow) return
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) return;
 
-  const totalIngresos = data.filter((item) => item.monto > 0).reduce((sum, item) => sum + item.monto, 0)
-  const totalGastos = data.filter((item) => item.monto < 0).reduce((sum, item) => sum + Math.abs(item.monto), 0)
-  const balance = totalIngresos - totalGastos
+  const totalIngresos = data.filter((item) => item.monto > 0).reduce((sum, item) => sum + item.monto, 0);
+  const totalGastos = data.filter((item) => item.monto < 0).reduce((sum, item) => sum + Math.abs(item.monto), 0);
+  const balance = totalIngresos - totalGastos;
 
   const html = `
     <html>
@@ -333,12 +348,12 @@ export const printReport = async (data: ReportData[], options: ReportOptions) =>
         </div>
       </body>
     </html>
-  `
+  `;
 
-  printWindow.document.write(html)
-  printWindow.document.close()
-  printWindow.print()
-}
+  printWindow.document.write(html);
+  printWindow.document.close();
+  printWindow.print();
+};
 
 export const generateExcel = async (data: ReportData[], options: ReportOptions) => {
   // Preparar datos para Excel con mejor formato
@@ -350,7 +365,7 @@ export const generateExcel = async (data: ReportData[], options: ReportOptions) 
       Descripción: item.descripcion,
       Monto: item.monto,
     })),
-  )
+  );
 
   // Ajustar ancho de columnas
   const colWidths = [
@@ -359,17 +374,17 @@ export const generateExcel = async (data: ReportData[], options: ReportOptions) 
     { wch: 15 }, // Categoría
     { wch: 30 }, // Descripción
     { wch: 12 }, // Monto
-  ]
-  worksheet["!cols"] = colWidths
+  ];
+  worksheet["!cols"] = colWidths;
 
   // Crear libro de trabajo
-  const workbook = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Reporte Financiero")
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Reporte Financiero");
 
   // Generar archivo
-  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" })
-  const data2 = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
+  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+  const data2 = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
 
-  FileSaver.saveAs(data2, "reporte-financiero.xlsx")
-}
+  FileSaver.saveAs(data2, "reporte-financiero.xlsx");
+};
 

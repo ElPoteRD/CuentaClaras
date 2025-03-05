@@ -2,7 +2,7 @@ import { apiClient } from "../config/axiosconfig";
 import { CategoryEntity } from "@/entities/category";
 
 export const categoryService = {
-  async getCategories(token: string) {
+  async getCategory(token: string) {
     return await apiClient.get<CategoryEntity[]>("/category", {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -19,7 +19,7 @@ export const categoryService = {
   },
 
   async createCategory(data: Omit<CategoryEntity, "id">, token: string) {
-    return await apiClient.post<CategoryEntity>("/category", data, {
+    return await apiClient.post<CategoryEntity>("/category/createCategory", data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

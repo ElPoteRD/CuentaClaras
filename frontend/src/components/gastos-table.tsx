@@ -29,16 +29,20 @@ export function GastosTable() {
   const { accounts, refetchAccounts } = useAccount();
   const [openAlert, setOpenAlert] = useState(false);
   const [selectedGasto, setSelectedGasto] = useState<any>(null);
+  const [gastos, setGastos] = useState<any[]>([]);
 
-  // Cargar transacciones al montar el componente
+  // Efecto para cargar transacciones iniciales
   useEffect(() => {
     fetchTransactions();
   }, [fetchTransactions]);
 
-  // Filtrar solo los gastos
-  const gastos = transactions.filter(
-    (transaction) => transaction.type === "Gasto"
-  );
+  // Efecto para filtrar y actualizar gastos cuando cambien las transacciones
+  useEffect(() => {
+    const filteredGastos = transactions.filter(
+      (transaction) => transaction.type === "Gasto"
+    );
+    setGastos(filteredGastos);
+  }, [transactions]);
 
   const getCurrency = (accountId: number) => {
     const account = accounts.find(acc => acc.id === accountId);
@@ -50,6 +54,7 @@ export function GastosTable() {
     return account?.name || 'Cuenta no encontrada';
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDeleteClick = (gasto: any) => {
     const account = accounts.find(acc => acc.id === gasto.accountId);
     if (!account) {

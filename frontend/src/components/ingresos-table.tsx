@@ -29,18 +29,20 @@ export function IngresosTable() {
   const { accounts, refetchAccounts } = useAccount();
   const [openAlert, setOpenAlert] = useState(false);
   const [selectedIngreso, setSelectedIngreso] = useState<any>(null);
+  const [ingresos, setIngresos] = useState<any[]>([]);
 
-  // Cargar transacciones al montar el componente
+  // Efecto para cargar transacciones iniciales
   useEffect(() => {
     fetchTransactions();
   }, [fetchTransactions]);
 
-  // Filtrar solo los ingresos
-  const ingresos = transactions.filter(
-    (transaction) => transaction.type === "Ingreso"
-  );
-
-  console.log('Ingresos filtrados:', ingresos);
+  // Efecto para filtrar y actualizar ingresos cuando cambien las transacciones
+  useEffect(() => {
+    const filteredIngresos = transactions.filter(
+      (transaction) => transaction.type === "Ingreso"
+    );
+    setIngresos(filteredIngresos);
+  }, [transactions]);
 
   const getCurrency = (accountId: number) => {
     const account = accounts.find(acc => acc.id === accountId);
