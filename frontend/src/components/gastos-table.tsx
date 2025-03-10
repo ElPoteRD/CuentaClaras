@@ -24,12 +24,15 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 
+
+
 export function GastosTable() {
-  const { transactions, deleteTransaction, fetchTransactions, isLoading, error } = useTransaction();
+  const { transactions, deleteTransaction, fetchTransactions, isLoading, error, } = useTransaction();
   const { accounts, refetchAccounts } = useAccount();
   const [openAlert, setOpenAlert] = useState(false);
   const [selectedGasto, setSelectedGasto] = useState<any>(null);
   const [gastos, setGastos] = useState<any[]>([]);
+
 
   // Efecto para cargar transacciones iniciales
   useEffect(() => {
@@ -128,10 +131,6 @@ export function GastosTable() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      {/* Indicador de carga */}
-      {isLoading && <div>Cargando gastos...</div>}
-
       {/* Mensaje de error */}
       {error && <div className="text-red-500">{error}</div>}
 
@@ -190,7 +189,7 @@ export function GastosTable() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem >
                           <Pencil className="mr-2 h-4 w-4" />
                           <span>Editar</span>
                         </DropdownMenuItem>
@@ -214,4 +213,3 @@ export function GastosTable() {
     </>
   );
 }
-

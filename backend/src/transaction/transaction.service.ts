@@ -128,23 +128,37 @@ export class TransactionService {
         },
         include: { account: true },
       });
-      await this.accout.updateAccountBalance(
-        deleteTransaction.accountId,
-        deleteTransaction.amount,
-        deleteTransaction.type,
-      );
+
       if (!deleteTransaction) {
         throw new NotFoundException('Transaction not found');
       }
+
+      // Si es un ingreso, restamos el monto (negativo)
+      // Si es un gasto, sumamos el monto (positivo)
+      const adjustedAmount =
+        deleteTransaction.type === 'Ingreso'
+          ? -deleteTransaction.amount
+          : deleteTransaction.type === 'Gasto'
+            ? +deleteTransaction.amount
+            : deleteTransaction.amount;
+
+      await this.accout.updateAccountBalance(
+        deleteTransaction.accountId,
+        adjustedAmount,
+        deleteTransaction.type,
+      );
+
       return deleteTransaction;
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError)
+      if (error instanceof PrismaClientKnownRequestError) {
         throw new NotFoundException(error.message);
-      if (error instanceof Error)
+      }
+      if (error instanceof Error) {
         throw new HttpException(
           error.message,
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
+      }
     }
   }
 }

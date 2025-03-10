@@ -13,38 +13,58 @@ import {
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import cuentasLogo from "../../assets/CuentaClarasIcon.svg";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { ILoginForm } from "@/entities/auth";
 import { useLogin } from "@/hooks/use-login";
+import { toast } from "sonner";
 
 export default function Login() {
     const navigate = useNavigate();
-    const { loading, loginProcess } = useLogin();
-
-    const [formData, setFormData] = useState<ILoginForm>({
-        email: "",
-        password: "",
-    });
     const [showPassword, setShowPassword] = useState(false);
+    const { loginProcess, loading } = useLogin();
+    const [formData, setFormData] = useState<ILoginForm>({
+        email: '',
+        password: '',
+    });
+
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        // Validaciones básicas
+        if (!formData.email || !formData.password) {
+            toast.error('Error', {
+                description: 'Por favor, completa todos los campos',
+            });
+            return;
+        }
+        try {
+            const result = await loginProcess(formData);
+            if (result.success) {
+                setTimeout(() => {
+
+                    navigate('/dashboard');
+                })
+                setFormData({
+                    email: '',
+                    password: '',
+                });
+            }
+        } catch (error) {
+            console.error('Error en el formulario:', error);
+            toast.error('Error', {
+                description: 'Ocurrió un error al procesar el formulario',
+            });
+        }
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [e.target.name]: e.target.value
+            [name]: value,
         }));
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        const response = await loginProcess(formData);
-
-        if (response.success && response.user) {
-            setTimeout(() => {
-                navigate("/dashboard");
-            }, 3000);
-        }
-    };
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 p-4">

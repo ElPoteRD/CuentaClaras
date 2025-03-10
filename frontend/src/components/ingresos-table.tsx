@@ -85,11 +85,6 @@ export function IngresosTable() {
       setSelectedIngreso(null);
     }
   };
-
-  if (isLoading) {
-    return <div className="text-center p-4">Cargando ingresos...</div>;
-  }
-
   if (error) {
     return <div className="text-center text-red-500 p-4">{error}</div>;
   }

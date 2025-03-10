@@ -14,7 +14,7 @@ export const useProfile = () => {
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const { data, logout } = useStore();
+  const { logout } = useStore();
   const { logoutSession, loadSession } = useLogin();
   const navigate = useNavigate();
 
@@ -26,21 +26,28 @@ export const useProfile = () => {
   const getProfile = async () => {
     setIsLoading(true);
     try {
-      const existToken = JSON.parse(localStorage.getItem("login-token") ?? "");
-
-      if (!data?.token) loadSession();
-
-      if (existToken) {
-        const res = await getDataProfile(
-          data?.token ?? existToken.access_token
-        );
-        setProfile(res.data);
-        setError(false);
-        setErrorMessage(null);
+      const storedToken = localStorage.getItem("login-token");
+      if (!storedToken) {
+        loadSession();
+        return; 
       }
+      // Parseamos el token almacenado
+      const tokenData = JSON.parse(storedToken);
+      const accessToken = tokenData.access_token;
+
+      if (!accessToken) {
+        throw new Error("No se encontró un token de acceso válido");
+      }
+      // Hacemos la petición con el token
+      const response = await getDataProfile(accessToken);
+      // Actualizamos el estado con los datos del perfil
+      setProfile(response.data);
+      setError(false);
+      setErrorMessage(null);
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response?.status === 401) {
+          // Si el token expiró, cerramos la sesión
           logoutSession();
           logout();
           toast.error("Su sesión ha expirado");
@@ -52,6 +59,13 @@ export const useProfile = () => {
             description: error.message,
           });
         }
+      } else {
+        // Error que no es de Axios
+        setError(true);
+        setErrorMessage(
+          error instanceof Error ? error.message : "Error desconocido"
+        );
+        toast.error("Error al obtener el perfil");
       }
     } finally {
       setIsLoading(false);
@@ -73,12 +87,10 @@ export const useProfile = () => {
       if (!parsedToken.access_token) {
         throw new Error("Token inválido");
       }
-
       // Validar que el ID coincida con el usuario actual
       if (!parsedToken.user?.id) {
         throw new Error("ID de usuario no encontrado");
       }
-
       // Extraer solo los campos necesarios para la actualización
       const updateData = {
         firstName: profileData.firstName,
@@ -86,21 +98,18 @@ export const useProfile = () => {
         email: profileData.email,
         avatar: profileData.avatar,
       };
-
       // Usar el token del localStorage
       const response = await updateProfile(
         updateData,
         parsedToken.access_token,
         parsedToken.user.id
       );
-
       if (response.data) {
         setProfile(response.data);
         setError(false);
         setErrorMessage(null);
         return response.data;
       }
-
       throw new Error("Error al actualizar el perfil");
     } catch (error) {
       setError(true);
@@ -112,15 +121,18 @@ export const useProfile = () => {
           throw new Error("Su sesión ha expirado");
         }
         setErrorMessage(error.response?.data?.message || error.message);
-        throw new Error(error.response?.data?.message || "Error al actualizar el perfil");
+        throw new Error(
+          error.response?.data?.message || "Error al actualizar el perfil"
+        );
       }
-      setErrorMessage(error instanceof Error ? error.message : "Error desconocido");
+      setErrorMessage(
+        error instanceof Error ? error.message : "Error desconocido"
+      );
       throw error;
     } finally {
       setIsLoading(false);
     }
   };
-
   return {
     profile,
     isLoading,

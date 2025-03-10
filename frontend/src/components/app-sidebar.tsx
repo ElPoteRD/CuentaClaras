@@ -38,18 +38,17 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useProfile } from "@/hooks/use-profile";
-import useStore from "@/context/useStore";
 import { useNavigate } from "react-router-dom";
+import { useLogin } from "@/hooks/use-login";
 
 export function AppSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const { profile } = useProfile();
   const navigate = useNavigate()
-  const { logout } = useStore();
+  const { logoutSession } = useLogin();
 
-  const closeSession = () => {
-    logout();
-    localStorage.clear();
+  const handleLogout = async () => {
+    await logoutSession();
     navigate("/");
   };
   return (
@@ -175,7 +174,7 @@ export function AppSidebar() {
               </DropdownMenuItem>
             </Link>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={closeSession}
+            <DropdownMenuItem onClick={handleLogout}
               className="cursor-pointer">
               <LogOut className="mr-2 h-4 w-4" />
               <span

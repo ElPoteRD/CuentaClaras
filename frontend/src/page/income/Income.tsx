@@ -13,7 +13,7 @@ import { useAccount } from "@/hooks/use-account";
 export default function Income() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { profile: Id } = useProfile();
-  const { transactions, fetchTransactions } = useTransaction();
+  const { transactions, fetchTransactions, refreshTransactions } = useTransaction();
   const { accounts } = useAccount();
   const [porcentajeCambio, setPorcentajeCambio] = useState(0);
 
@@ -69,13 +69,15 @@ export default function Income() {
     setPorcentajeCambio(porcentaje);
   }, [ingresos]);
 
-  function handleModalClose(shouldRefresh?: boolean): void {
-    setIsModalOpen(false);
-    if (shouldRefresh) {
-      fetchTransactions();
+  const handleModalClose = () => {
+    setIsModalOpen(false)
+    refreshTransactions() // Refrescamos las cuentas al cerrar el modal
+  }    
+  useEffect(() => {
+    if (transactions.length > 0) {
+      setIsModalOpen(true)
     }
-  }
-
+}, [transactions]);
   return (
     <Layout>
       <div className="container mx-auto py-4 px-4 sm:px-6 lg:px-8">
@@ -134,6 +136,7 @@ export default function Income() {
         <AgregarIngresoModal
           isOpen={isModalOpen}
           onClose={handleModalClose}
+          onAddTransacction={refreshTransactions}
         />
       </div>
     </Layout>
