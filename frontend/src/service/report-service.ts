@@ -50,7 +50,7 @@ export const generatePDF = async (data: EnhancedReportData[]) => {
     body: [
       ['Ingresos', `+${summary.income.toLocaleString('es-ES')}`],
       ['Gastos', `-${summary.expense.toLocaleString('es-ES')}`],
-      ['Balance Total', summary.total.toLocaleString('es-ES')]
+      ['Balance Total', (summary.income - summary.expense).toLocaleString('es-ES')]
     ],
     styles: {
       fillColor: [255, 255, 255],
