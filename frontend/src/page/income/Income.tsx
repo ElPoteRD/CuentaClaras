@@ -72,12 +72,8 @@ export default function Income() {
   const handleModalClose = () => {
     setIsModalOpen(false)
     refreshTransactions() // Refrescamos las cuentas al cerrar el modal
-  }    
-  useEffect(() => {
-    if (transactions.length > 0) {
-      setIsModalOpen(true)
-    }
-}, [transactions]);
+  }
+
   return (
     <Layout>
       <div className="container mx-auto py-4 px-4 sm:px-6 lg:px-8">
@@ -106,10 +102,9 @@ export default function Income() {
                     currency: currency
                   }).format(total)}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  <span className={porcentajeCambio >= 0 ? "text-green-600" : "text-red-600"}>
+                <p className="text-xs text-muted-foreground text-green-600">
+                  <span className="text-green-600">
                     {porcentajeCambio > 0 ? "+" : ""}
-                    {porcentajeCambio.toFixed(2)}% del mes pasado
                   </span>
                 </p>
               </CardContent>

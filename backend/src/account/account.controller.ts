@@ -63,7 +63,7 @@ export class AccountController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete('/deleteAccount')
+  @Delete('/:id')
   @ApiOperation({
     summary: 'Delete an account with password verification',
   })
@@ -74,9 +74,6 @@ export class AccountController {
   })
   @ApiResponse({ status: 404, description: 'Account not found' })
   async deleteAccount(@Body() data: DeleteAccountDto, @Req() req) {
-    return await this.accountService.deleteAccount(
-      data.accountId,
-      req.user.userId,
-    );
+    return await this.accountService.deleteAccount(data);
   }
 }

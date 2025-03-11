@@ -48,12 +48,4 @@ export class DeleteAccountDto {
   })
   @IsNumber()
   accountId: number;
-
-  @ApiProperty({
-    description: 'User password for verification',
-    example: 'tuPassword123',
-  })
-  @IsNotEmpty()
-  @IsString()
-  password: string;
 }

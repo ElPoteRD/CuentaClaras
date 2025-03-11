@@ -35,7 +35,7 @@ export const useTransaction = () => {
     }
   }, [getToken]);
 
-  const fetchTransactions = useCallback(async () => {
+  const fetchTransactions = async () => {
     setIsLoading(true);
     try {
       const token = getToken();
@@ -52,7 +52,7 @@ export const useTransaction = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [getToken]);
+  };
 
   const refreshTransactions = async () => {
     setIsLoading(true);

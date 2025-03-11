@@ -89,8 +89,9 @@ export default function Account() {
         }
     }
 
-    function handleViewDetails(id: number): void {
-        navigate(`/account/${id}`);
+    // Update the handleViewDetails function
+    const handleViewDetails = (id: number) => {
+        navigate(`/account/${id}`)
     }
 
     return (
@@ -142,7 +143,6 @@ export default function Account() {
                     <Tabs defaultValue="cuentas" className="space-y-4">
                         <TabsList>
                             <TabsTrigger value="cuentas">Mis Cuentas</TabsTrigger>
-                            <TabsTrigger value="inversiones">Mis metas Financieras</TabsTrigger>
                             <TabsTrigger value="category">Categorías</TabsTrigger>
                         </TabsList>
 
@@ -203,7 +203,6 @@ export default function Account() {
                                 </div>
                             )}
                         </TabsContent>
-
                         {/* Categorías Tab */}
                         <TabsContent value="category">
                             <div className="flex justify-between items-center mb-6">
@@ -235,66 +234,6 @@ export default function Account() {
                                             </CardHeader>
                                         </Card>
                                     ))}
-                                </div>
-                            )}
-                        </TabsContent>
-
-                        {/* Inversiones Tab */}
-                        <TabsContent value="inversiones">
-                            {accounts.filter(account => account.type === "inversión").length === 0 ? (
-                                <Card>
-                                    <CardContent className="flex flex-col items-center justify-center h-40">
-                                        <p className="text-muted-foreground mb-4">No tienes cuentas de inversión</p>
-                                        <Button onClick={() => setIsModalOpen(true)}>
-                                            <PlusCircle className="mr-2 h-4 w-4" />Crear cuenta de inversión
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-                            ) : (
-                                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                    {accounts
-                                        .filter((account) => account.type === "inversión")
-                                        .map((account) => (
-                                            <Card key={account.id} className="relative overflow-hidden">
-                                                <CardHeader className="space-y-1">
-                                                    <div className="flex items-center justify-between">
-                                                        <div className="flex items-center space-x-2">
-                                                            {getAccountTypeIcon(account.type)}
-                                                            <CardTitle className="text-xl">{account.name}</CardTitle>
-                                                        </div>
-                                                        <Badge variant={account.type === "crédito" ? "destructive" : "secondary"}>
-                                                            {account.type.toUpperCase()}
-                                                        </Badge>
-                                                    </div>
-                                                    <CardDescription>
-                                                        {account.currency}
-                                                    </CardDescription>
-                                                </CardHeader>
-                                                <CardContent>
-                                                    <div className="text-2xl font-bold">
-                                                        ${account.initialBalance.toFixed(2)}
-                                                    </div>
-                                                </CardContent>
-                                                <CardFooter className="flex justify-between">
-                                                    <div className="space-y-1">
-                                                        <div className="text-sm font-medium">
-                                                            Fecha de creación
-                                                        </div>
-                                                        <div className="text-sm text-muted-foreground">
-                                                            {new Date(account.creationDate).toLocaleDateString()}
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex gap-2">
-                                                        <Button
-                                                            variant="outline"
-                                                            onClick={() => handleViewDetails(account.id)}
-                                                        >
-                                                            Ver detalles
-                                                        </Button>
-                                                    </div>
-                                                </CardFooter>
-                                            </Card>
-                                        ))}
                                 </div>
                             )}
                         </TabsContent>
