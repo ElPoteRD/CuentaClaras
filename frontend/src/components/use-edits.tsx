@@ -15,17 +15,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner"
 import { AccountEntity } from "@/entities/account"
 import { useTransaction } from "@/hooks/use-transaction";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import { CalendarIcon } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+import { TransactionEntity } from "@/entities/transaction"
+import { useCategory } from "@/hooks/use-category"
 
 interface EditIngresoModalProps {
     isOpen: boolean;
     onClose: () => void;
-    transaction: any;
-    accountId: number;
+    transaction: TransactionEntity | null;
 }
 
 interface EditAccountModalProps {
@@ -56,9 +52,7 @@ export const EditAccountModal = ({ isOpen, onClose, account }: EditAccountModalP
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-
         if (!account) return
-
         try {
             const updatedAccount = {
                 name: formData.name,
@@ -170,14 +164,14 @@ export const EditAccountModal = ({ isOpen, onClose, account }: EditAccountModalP
     )
 }
 
-export const EditIngresoModal = ({ isOpen, onClose, transaction, accountId }: EditIngresoModalProps) => {
+export const EditIngresoModal = ({ isOpen, onClose, transaction }: EditIngresoModalProps) => {
     const { updateTransaction, isLoading } = useTransaction();
-    const { accounts } = useAccount();
+    const { categories, isLoading: loadingCategories } = useCategory();
     const [formData, setFormData] = useState({
         description: "",
         amount: "",
-        accountId: accountId.toString(),
-        date: new Date().toISOString()
+        type: "Ingreso",
+        category: "",
     });
 
     useEffect(() => {
@@ -185,21 +179,22 @@ export const EditIngresoModal = ({ isOpen, onClose, transaction, accountId }: Ed
             setFormData({
                 description: transaction.description || "",
                 amount: transaction.amount.toString(),
-                accountId: transaction.accountId.toString(),
-                date: transaction.date
+                type: "Ingreso",
+                category: transaction.categoryId?.toString() || "",
             });
         }
     }, [transaction]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         try {
+            if (!transaction?.id) return;
+
             await updateTransaction(transaction.id, {
                 description: formData.description,
                 amount: Number(formData.amount),
                 type: "Ingreso",
-                categoryId: transaction.categoryId,
+                categoryId: Number(formData.category)
             });
 
             toast.success("Ingreso actualizado correctamente");
@@ -222,7 +217,6 @@ export const EditIngresoModal = ({ isOpen, onClose, transaction, accountId }: Ed
 
                 <form onSubmit={handleSubmit}>
                     <div className="grid gap-4 py-4">
-                        {/* Description Field */}
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="description" className="text-right">
                                 Descripción
@@ -236,7 +230,6 @@ export const EditIngresoModal = ({ isOpen, onClose, transaction, accountId }: Ed
                             />
                         </div>
 
-                        {/* Amount Field */}
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="amount" className="text-right">
                                 Monto
@@ -250,62 +243,50 @@ export const EditIngresoModal = ({ isOpen, onClose, transaction, accountId }: Ed
                                 required
                             />
                         </div>
-
-                        {/* Account Selection */}
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="account" className="text-right">
-                                Cuenta
-                            </Label>
+                            <Label htmlFor="categoria" className="text-right">Categoría</Label>
                             <Select
-                                value={formData.accountId}
-                                onValueChange={(value) => setFormData({ ...formData, accountId: value })}
-                                required
+                                value={formData.category.toString()}
+                                onValueChange={(value) => setFormData(prev => ({ ...prev, categoryId: value }))}
                             >
                                 <SelectTrigger className="col-span-3">
-                                    <SelectValue placeholder="Selecciona una cuenta" />
+                                    <SelectValue placeholder={
+                                        loadingCategories
+                                            ? "Cargando categorías..."
+                                            : "Selecciona una categoría"
+                                    } />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {accounts.map((account) => (
-                                        <SelectItem key={account.id} value={account.id.toString()}>
-                                            {account.name} ({account.currency})
+                                    {loadingCategories ? (
+                                        <SelectItem value="" disabled>
+                                            Cargando categorías...
                                         </SelectItem>
-                                    ))}
+                                    ) : categories.length > 0 ? (
+                                        categories.map((category) => (
+                                            <SelectItem
+                                                key={category.id}
+                                                value={category.id.toString()}
+                                            >
+                                                {category.name}
+                                            </SelectItem>
+                                        ))
+                                    ) : (
+                                        <SelectItem value="" disabled>
+                                            No hay categorías disponibles
+                                        </SelectItem>
+                                    )}
                                 </SelectContent>
                             </Select>
                         </div>
 
-                        {/* Date Picker */}
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">Fecha</Label>
-                            <Popover>
-                                <PopoverTrigger asChild className="col-span-3">
-                                    <Button
-                                        variant="outline"
-                                        className="justify-start text-left font-normal"
-                                    >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {formData.date ? format(new Date(formData.date), "PPP", { locale: es }) : <span>Selecciona fecha</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0">
-                                    <Calendar
-                                        mode="single"
-                                        selected={new Date(formData.date)}
-                                        onSelect={(date) => date && setFormData({ ...formData, date: date.toISOString() })}
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                        </div>
+                        <DialogFooter>
+                            <Button type="submit" disabled={isLoading}>
+                                {isLoading ? "Guardando..." : "Guardar Cambios"}
+                            </Button>
+                        </DialogFooter>
                     </div>
-
-                    <DialogFooter>
-                        <Button type="submit" disabled={isLoading}>
-                            {isLoading ? "Guardando..." : "Guardar Cambios"}
-                        </Button>
-                    </DialogFooter>
                 </form>
             </DialogContent>
         </Dialog>
     );
-}
+};

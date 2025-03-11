@@ -12,6 +12,7 @@ import Reporte from "./page/reports/Report";
 import Configuration from "./page/configuration/Configuration";
 import Caracteristcas from "./components/caracteristica";
 import { AccountDetail } from "./page/account/[id]/page";
+import { About } from "./components/about";
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
         <Route path="/configuration" element={<Configuration />}></Route>
         <Route path="/caracteristicas" element={<Caracteristcas />}></Route>
         <Route path="/account/:id" element={<AccountDetail />}></Route>
+        <Route path="/about" element={<About />}></Route>
 
 
       </Routes>

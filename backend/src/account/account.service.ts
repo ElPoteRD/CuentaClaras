@@ -179,24 +179,28 @@ export class AccountService {
   /**
    ** Delete account
    */
-   async deleteAccount(data: DeleteAccountDto): Promise<AccountEntity> {
-     try {
-       // First delete related transactions
-       await this.prisma.transaction.deleteMany({
-         where: { accountId: data.accountId }
-       });
-   
-       // Then delete the account
-       const deletedAccount = await this.prisma.account.delete({
-         where: { id: data.accountId }
-       });
-   
-       return deletedAccount;
-     } catch (error) {
-       throw new HttpException(
-         'Failed to delete account',
-         HttpStatus.INTERNAL_SERVER_ERROR
-       );
-     }
-   }
+  async deleteAccount(
+    id: number,
+    data: DeleteAccountDto,
+  ): Promise<AccountEntity> {
+    try {
+      // First delete related transactions
+      await this.prisma.transaction.deleteMany({
+        where: { accountId: data.accountId },
+      });
+
+      // Then delete the account
+      const deletedAccount = await this.prisma.account.delete({
+        where: { id: data.accountId },
+      });
+      if (!deletedAccount)
+        throw new HttpException('Account not found', HttpStatus.NOT_FOUND);
+      return deletedAccount;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to delete account',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

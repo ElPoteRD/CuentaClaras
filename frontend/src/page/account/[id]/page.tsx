@@ -69,7 +69,6 @@ export function AccountDetail() {
     )
   }
 
-
   const handleDeleteAccount = async () => {
     if (!cuenta) return;
     try {

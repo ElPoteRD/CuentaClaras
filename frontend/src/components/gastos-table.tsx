@@ -70,10 +70,8 @@ export function GastosTable() {
 
   const confirmDelete = async () => {
     if (!selectedGasto) return;
-
     try {
       const success = await deleteTransaction(selectedGasto.id);
-
       if (success) {
         toast.success(`Gasto eliminado correctamente`);
         // Actualizar la lista de transacciones y el balance de las cuentas

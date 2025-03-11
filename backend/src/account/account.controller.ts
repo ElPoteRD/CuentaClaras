@@ -73,7 +73,11 @@ export class AccountController {
     description: 'Unauthorized or incorrect password',
   })
   @ApiResponse({ status: 404, description: 'Account not found' })
-  async deleteAccount(@Body() data: DeleteAccountDto, @Req() req) {
-    return await this.accountService.deleteAccount(data);
+  async deleteAccount(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: DeleteAccountDto,
+
+  ) {
+    return await this.accountService.deleteAccount(id, data);
   }
 }

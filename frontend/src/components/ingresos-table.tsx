@@ -23,11 +23,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { EditIngresoModal } from "./use-edits";
 
 export function IngresosTable() {
-  const { transactions, deleteTransaction, fetchTransactions, isLoading, error } = useTransaction();
+  const { transactions, deleteTransaction, fetchTransactions, error } = useTransaction();
   const { accounts, refetchAccounts } = useAccount();
   const [openAlert, setOpenAlert] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [selectedIngreso, setSelectedIngreso] = useState<any>(null);
   const [ingresos, setIngresos] = useState<any[]>([]);
 
@@ -36,6 +38,7 @@ export function IngresosTable() {
     fetchTransactions();
   }, [fetchTransactions]);
 
+  const transacciones = selectedIngreso ? transactions?.find(acc => acc.id === selectedIngreso.id) : null;
   // Efecto para filtrar y actualizar ingresos cuando cambien las transacciones
   useEffect(() => {
     const filteredIngresos = transactions.filter(
@@ -84,6 +87,10 @@ export function IngresosTable() {
       setOpenAlert(false);
       setSelectedIngreso(null);
     }
+  };
+  const handleEditClick = (ingreso: any) => {
+    setSelectedIngreso(ingreso);
+    setIsEditModalOpen(true);
   };
   if (error) {
     return <div className="text-center text-red-500 p-4">{error}</div>;
@@ -188,9 +195,7 @@ export function IngresosTable() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                         <DropdownMenuItem
-                          onClick={() => {
-                            // Aquí irá la lógica de edición
-                          }}
+                          onClick={() => handleEditClick(ingreso)}
                         >
                           <Pencil className="mr-2 h-4 w-4" />
                           <span>Editar</span>
@@ -210,6 +215,11 @@ export function IngresosTable() {
             )}
           </TableBody>
         </Table>
+        <EditIngresoModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          transaction={transacciones || null}
+        />
       </div>
     </>
   );

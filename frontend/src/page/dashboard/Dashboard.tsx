@@ -12,7 +12,7 @@ import { useEffect } from "react";
 // Update the component function
 export default function Dashboard() {
   const { accounts } = useAccount();
-  const { transactions, isLoading: loadingTrans, fetchTransactions } = useTransaction();
+  const { transactions, fetchTransactions } = useTransaction();
 
   // Fetch transactions on mount
   useEffect(() => {

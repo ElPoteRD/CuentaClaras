@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -42,7 +41,7 @@ export default function Home() {
           </Link>
           <Link
             className="text-sm font-medium hover:underline underline-offset-4 hidden sm:inline-block"
-            to="#"
+            to="/about"
           >
             Sobre Nosotros
           </Link>
@@ -183,10 +182,7 @@ export default function Home() {
               <nav className="sm:ml-auto flex justify-center gap-4 sm:gap-6">
                 <Card>
                   <CardHeader className="flex items-center">
-                    <CardTitle>Usuario 1</CardTitle>
-                    <CardDescription>
-                      Propietario de pequeña empresa
-                    </CardDescription>
+                    <CardTitle>Luis Emilio</CardTitle>
                   </CardHeader>
                   <CardContent>
                     "Cuentas Claras ha transformado completamente la forma en
