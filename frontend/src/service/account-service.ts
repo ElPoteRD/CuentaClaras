@@ -38,11 +38,11 @@ export const updateAccount = async (
   });
 
 // Eliminar una cuenta
-export const deleteAccount = async ( token: string) =>
-  await apiClient.delete(`/account/deleteAccount`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+export const deleteAccount = async (token: string, accountId: number) => {
+  const response = await apiClient.delete<AccountEntity>(`/account/${accountId}`, {
+    headers: { Authorization: `Bearer ${token}` }
   });
+  return response.data;
+};
 
 

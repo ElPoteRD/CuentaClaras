@@ -33,8 +33,8 @@ export class AuthService {
    * * This function generate a new JWT
    * @param user
    */
-  async login(user: UserEntity) {
-    const payload = { userId: user.id, email: user.email };
+  async login(user: any) {
+    const payload = { sub: user.id, email: user.email };
     return {
       user,
       access_token: this.jwt.sign(payload),

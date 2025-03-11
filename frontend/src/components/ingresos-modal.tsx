@@ -18,6 +18,7 @@ import { useCategory } from "@/hooks/use-category";
 interface AgregarIngresoModalProps {
   isOpen: boolean
   onClose: (shouldRefresh?: boolean) => void
+  onAddTransacction: () => void
 }
 
 export function AgregarIngresoModal({ isOpen, onClose }: AgregarIngresoModalProps) {
@@ -72,7 +73,7 @@ export function AgregarIngresoModal({ isOpen, onClose }: AgregarIngresoModalProp
 
       await createTransaction(transactionData);
       toast.success("Ingreso registrado exitosamente");
-      
+
       // Limpiar el formulario
       setFormData({
         amount: "",
@@ -81,7 +82,7 @@ export function AgregarIngresoModal({ isOpen, onClose }: AgregarIngresoModalProp
         categoryId: "",
         id: user?.id ?? 0
       });
-      
+
       onClose(true); // Indicamos que debe refrescar los datos
     } catch (error) {
       console.error('Error al crear la transacción:', error);
@@ -156,33 +157,6 @@ export function AgregarIngresoModal({ isOpen, onClose }: AgregarIngresoModalProp
                 className="col-span-3"
               />
             </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Fecha</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "col-span-3 justify-start text-left font-normal",
-                      !formData.date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formData.date ? format(formData.date, "PPP") : <span>Selecciona una fecha</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={formData.date}
-                    onSelect={(date) => date && setFormData(prev => ({ ...prev, date }))}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
             {/* Selector de categoría */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="categoria" className="text-right">Categoría</Label>
@@ -218,6 +192,31 @@ export function AgregarIngresoModal({ isOpen, onClose }: AgregarIngresoModalProp
                   )}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">Fecha</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "col-span-3 justify-start text-left font-normal",
+                      !formData.date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {formData.date ? format(formData.date, "PPP") : <span>Selecciona una fecha</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={formData.date}
+                    onSelect={(date) => date && setFormData(prev => ({ ...prev, date }))}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
           <DialogFooter>

@@ -23,7 +23,6 @@ import {
 } from "lucide-react";
 import LogoC from "../../assets/CuentaClarasIcon.svg";
 import { Link } from "react-router-dom";
-
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
@@ -37,7 +36,7 @@ export default function Home() {
         <nav className="ml-auto flex gap-4 sm:gap-6">
           <Link
             className="text-sm font-medium hover:underline underline-offset-4 hidden sm:inline-block"
-            to="#"
+            to="/caracteristicas"
           >
             Caracteristicas
           </Link>
@@ -46,12 +45,6 @@ export default function Home() {
             to="#"
           >
             Sobre Nosotros
-          </Link>
-          <Link
-            className="text-sm font-medium hover:underline underline-offset-4 hidden sm:inline-block"
-            to="#"
-          >
-            Contantanos
           </Link>
           <Button variant="outline" size="icon" className="sm:hidden">
             <Menu className="h-4 w-4" />

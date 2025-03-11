@@ -11,7 +11,7 @@ import { useAccount } from "@/hooks/use-account";
 
 export default function Expense() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { transactions, fetchTransactions } = useTransaction();
+  const { transactions, fetchTransactions, refreshTransactions } = useTransaction();
   const { accounts } = useAccount();
 
   // Cargar transacciones al montar el componente
@@ -55,12 +55,10 @@ export default function Expense() {
 
   const porcentajeCambio = calcularPorcentajeCambio();
 
-  const handleModalClose = async (shouldRefresh: boolean = false) => {
-    setIsModalOpen(false);
-    if (shouldRefresh) {
-      await fetchTransactions();
-    }
-  };
+  const handleModalClose = () => {
+    setIsModalOpen(false)
+    refreshTransactions() // Refrescamos las cuentas al cerrar el modal
+  }
 
   // Función para obtener la moneda de una cuenta
   const getCurrency = (accountId: number) => {
@@ -125,7 +123,7 @@ export default function Expense() {
         <AgregarGastoModal
           isOpen={isModalOpen}
           onClose={handleModalClose}
-
+          onAddTransacction={refreshTransactions}
         />
       </div>
     </Layout>

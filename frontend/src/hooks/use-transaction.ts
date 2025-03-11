@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { toast } from "sonner";
 import { TransactionEntity, updateTransaction } from "@/entities/transaction";
 import { transactionService } from "@/service/transaction-service";
+import { useAccount } from "@/hooks/use-account"; // Importa el hook useAccount
 
 export const useTransaction = () => {
   const [transactions, setTransactions] = useState<TransactionEntity[]>([]);
@@ -10,6 +11,8 @@ export const useTransaction = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
+
+  const { refetchAccounts } = useAccount(); // Obtén la función fetchAccounts del hook useAccount
 
   const getToken = useCallback(() => {
     try {
@@ -32,7 +35,7 @@ export const useTransaction = () => {
     }
   }, [getToken]);
 
-  const fetchTransactions = useCallback(async () => {
+  const fetchTransactions = async () => {
     setIsLoading(true);
     try {
       const token = getToken();
@@ -49,8 +52,22 @@ export const useTransaction = () => {
     } finally {
       setIsLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  };
+
+  const refreshTransactions = async () => {
+    setIsLoading(true);
+    try {
+      await Promise.all([fetchTransactions(), refetchAccounts()]);
+      setError(null);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Error al actualizar los datos"
+      );
+      toast.error("Error al actualizar los datos");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const getTransactionById = async (id: number) => {
     setIsLoading(true);
@@ -147,6 +164,7 @@ export const useTransaction = () => {
     error,
     token,
     fetchTransactions,
+    refreshTransactions, // Exporta la nueva función
     getTransactionById,
     createTransaction,
     updateTransaction,

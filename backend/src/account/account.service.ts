@@ -177,51 +177,26 @@ export class AccountService {
     }
   }
   /**
-   ** Delete account by userId
-   * @param userId
+   ** Delete account
    */
-   async deleteAccount(accountId: number, userId: number) {
-    try {
-      // Verificar que la cuenta existe y pertenece al usuario
-      const account = await this.prisma.account.findFirst({
-        where: {
-          id: accountId,
-          userId: userId,
-        },
-      });
-  
-      if (!account) {
-        throw new HttpException(
-          'Cuenta no encontrada o no autorizada',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-  
-      // Eliminar usando transacción para mantener integridad
-      return await this.prisma.$transaction(async (prisma) => {
-        // Eliminar metas asociadas
-        await prisma.goal.deleteMany({
-          where: { accountId: accountId },
-        });
-  
-        // Eliminar transacciones asociadas
-        await prisma.transaction.deleteMany({
-          where: { accountId: accountId },
-        });
-  
-        // Eliminar la cuenta
-        return await prisma.account.delete({
-          where: { id: accountId },
-        });
-      });
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        `Error al eliminar la cuenta: ${error.message}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
+   async deleteAccount(data: DeleteAccountDto): Promise<AccountEntity> {
+     try {
+       // First delete related transactions
+       await this.prisma.transaction.deleteMany({
+         where: { accountId: data.accountId }
+       });
+   
+       // Then delete the account
+       const deletedAccount = await this.prisma.account.delete({
+         where: { id: data.accountId }
+       });
+   
+       return deletedAccount;
+     } catch (error) {
+       throw new HttpException(
+         'Failed to delete account',
+         HttpStatus.INTERNAL_SERVER_ERROR
+       );
+     }
+   }
 }

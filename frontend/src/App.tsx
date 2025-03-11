@@ -10,6 +10,8 @@ import Income from "./page/income/Income";
 import Expense from "./page/expense/Expense";
 import Reporte from "./page/reports/Report";
 import Configuration from "./page/configuration/Configuration";
+import Caracteristcas from "./components/caracteristica";
+import { AccountDetail } from "./page/account/[id]/page";
 
 
 function App() {
@@ -26,6 +28,10 @@ function App() {
         <Route path="/expense" element={<Expense />}></Route>
         <Route path="/report" element={<Reporte />}></Route>
         <Route path="/configuration" element={<Configuration />}></Route>
+        <Route path="/caracteristicas" element={<Caracteristcas />}></Route>
+        <Route path="/account/:id" element={<AccountDetail />}></Route>
+
+
       </Routes>
       <Toaster position="top-right" />
     </>

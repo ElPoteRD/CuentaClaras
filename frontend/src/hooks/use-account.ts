@@ -113,27 +113,20 @@ export const useAccount = () => {
     }
   };
 
-  const handleDeleteAccount = async (id: number) => {
+  const handleDeleteAccount = async (accountId: number) => {
     setIsLoading(true);
     try {
-      await deleteAccount(id.toString());
-      await handleGetAccounts();
-      toast.success("Cuenta eliminada exitosamente");
+      const existToken = JSON.parse(localStorage.getItem("login-token") ?? "");
+      await deleteAccount(existToken.access_token, accountId);
+      setAccounts(prev => prev.filter(acc => acc.id !== accountId));
+      toast.success("Cuenta eliminada correctamente");
+      return true;
     } catch (err) {
       if (err instanceof AxiosError) {
-        if (err.response?.status === 401) {
-          logoutSession();
-          logout();
-          toast.error("Su sesión ha expirado");
-          navigate("/");
-        } else {
-          setError(true);
-          setErrorMessage(err.message);
-          toast.error("Error al eliminar la cuenta", {
-            description: err.message,
-          });
-        }
+        const message = err.response?.data?.message || err.message;
+        toast.error("Error al eliminar la cuenta", { description: message });
       }
+      return false;
     } finally {
       setIsLoading(false);
     }

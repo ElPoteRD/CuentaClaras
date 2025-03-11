@@ -1,10 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {  AccountType, CurrencyType } from '@prisma/client';
-import {
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { AccountType, CurrencyType } from '@prisma/client';
+import { IsString, MaxLength, MinLength } from 'class-validator';
 
 export class UpdateAccountDto {
   @ApiProperty({
@@ -12,8 +8,6 @@ export class UpdateAccountDto {
     type: String,
   })
   @IsString()
-  @MaxLength(100)
-  @MinLength(10)
   name?: string;
   @ApiProperty({
     description: 'The currency of the account',

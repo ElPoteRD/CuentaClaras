@@ -25,6 +25,7 @@ import { toast } from "sonner";
 interface AgregarGastoModalProps {
   isOpen: boolean
   onClose: () => void
+  onAddTransacction: () => void
 }
 
 export function AgregarGastoModal({ isOpen, onClose }: AgregarGastoModalProps) {
@@ -32,22 +33,24 @@ export function AgregarGastoModal({ isOpen, onClose }: AgregarGastoModalProps) {
   const { accounts } = useAccount();
   const { createTransaction } = useTransaction();
   const { categories, isLoading: loadingCategories } = useCategory();
-
   const [selectedAccount, setSelectedAccount] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     amount: "",
     description: "",
     date: new Date(),
     categoryId: "",
-    accountId: "",
     id: user?.id ?? 0
   });
 
-  // Obtener la cuenta seleccionada
-  const selectedAccountData = accounts.find(acc => acc.id === selectedAccount);
-
-  // Filtrar categorías de tipo Gasto
-
+  const handleAccountSelect = (accountId: string) => {
+    setSelectedAccount(Number(accountId));
+    // Verificar si la cuenta existe
+    const account = accounts.find(acc => acc.id === Number(accountId));
+    if (!account) {
+      toast.error("Cuenta no válida");
+      return;
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,36 +60,40 @@ export function AgregarGastoModal({ isOpen, onClose }: AgregarGastoModalProps) {
       return;
     }
 
-    if (!formData.categoryId || !formData.accountId) {
-      toast.error("Selecciona una cuenta y categoría");
+    if (!selectedAccount) {
+      toast.error("Selecciona una cuenta");
       return;
     }
 
     try {
-      await createTransaction({
+      const transactionData = {
         amount: Number(formData.amount),
         description: formData.description,
         date: formData.date,
         type: "Gasto",
-        accountId: Number(formData.accountId),
+        accountId: selectedAccount,
         categoryId: Number(formData.categoryId),
-        userId: user.id,
-        id: 0
-      });
+        userId: user.id
+      };
 
+      console.log('Datos de la transacción:', transactionData); 
+      
+      await createTransaction(transactionData);
       toast.success("Gasto registrado exitosamente");
+
+      // Limpiar el formulario
       setFormData({
         amount: "",
         description: "",
         date: new Date(),
         categoryId: "",
-        accountId: "",
         id: user?.id ?? 0
       });
-      onClose(true);
+
+      onClose(true); // Indicamos que debe refrescar los datos
     } catch (error) {
-      console.error('Error al crear el gasto:', error);
-      toast.error("Error al registrar el gasto");
+      console.error('Error al crear la transacción:', error);
+      toast.error("Error al registrar el ingreso");
     }
   };
 
@@ -105,8 +112,8 @@ export function AgregarGastoModal({ isOpen, onClose }: AgregarGastoModalProps) {
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="cuenta" className="text-right">Cuenta</Label>
               <Select
-                value={formData.accountId}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, accountId: value }))}
+                value={selectedAccount?.toString()}
+                onValueChange={handleAccountSelect}
               >
                 <SelectTrigger className="col-span-3">
                   <SelectValue placeholder="Selecciona una cuenta" />
@@ -136,7 +143,7 @@ export function AgregarGastoModal({ isOpen, onClose }: AgregarGastoModalProps) {
             {/* Campo de monto con moneda dinámica */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="monto" className="text-right">
-                Monto ({selectedAccountData?.currency || 'USD'})
+                Monto ({accounts.find(acc => acc.id === selectedAccount)?.currency || 'USD'})
               </Label>
               <Input
                 id="monto"
@@ -144,7 +151,7 @@ export function AgregarGastoModal({ isOpen, onClose }: AgregarGastoModalProps) {
                 value={formData.amount}
                 onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
                 className="col-span-3"
-                placeholder={`0.00 ${selectedAccountData?.currency || 'USD'}`}
+                placeholder={`0.00 ${accounts.find(acc => acc.id === selectedAccount)?.currency || 'USD'}`}
                 required
               />
             </div>
@@ -228,7 +235,7 @@ export function AgregarGastoModal({ isOpen, onClose }: AgregarGastoModalProps) {
           <DialogFooter>
             <Button
               type="submit"
-              disabled={!formData.accountId || !formData.amount || !formData.description || !formData.categoryId}
+              disabled={!formData.amount || !formData.description || !formData.categoryId}
             >
               Guardar Gasto
             </Button>

@@ -13,7 +13,7 @@ import { useAccount } from "@/hooks/use-account";
 export default function Income() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { profile: Id } = useProfile();
-  const { transactions, fetchTransactions } = useTransaction();
+  const { transactions, fetchTransactions, refreshTransactions } = useTransaction();
   const { accounts } = useAccount();
   const [porcentajeCambio, setPorcentajeCambio] = useState(0);
 
@@ -69,11 +69,9 @@ export default function Income() {
     setPorcentajeCambio(porcentaje);
   }, [ingresos]);
 
-  function handleModalClose(shouldRefresh?: boolean): void {
-    setIsModalOpen(false);
-    if (shouldRefresh) {
-      fetchTransactions();
-    }
+  const handleModalClose = () => {
+    setIsModalOpen(false)
+    refreshTransactions() // Refrescamos las cuentas al cerrar el modal
   }
 
   return (
@@ -104,10 +102,9 @@ export default function Income() {
                     currency: currency
                   }).format(total)}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  <span className={porcentajeCambio >= 0 ? "text-green-600" : "text-red-600"}>
+                <p className="text-xs text-muted-foreground text-green-600">
+                  <span className="text-green-600">
                     {porcentajeCambio > 0 ? "+" : ""}
-                    {porcentajeCambio.toFixed(2)}% del mes pasado
                   </span>
                 </p>
               </CardContent>
@@ -134,6 +131,7 @@ export default function Income() {
         <AgregarIngresoModal
           isOpen={isModalOpen}
           onClose={handleModalClose}
+          onAddTransacction={refreshTransactions}
         />
       </div>
     </Layout>
