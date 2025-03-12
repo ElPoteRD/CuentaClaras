@@ -18,10 +18,10 @@ interface StoredAuthData {
 }
 
 export const useLogin = () => {
-  const [loading, setLoading] = useState(false);
   const { login, logout } = useStore();
-  const [error, setError] = useState<string | null>(null);
-
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState();
+  
   const loginProcess = async (request: ILoginForm): Promise<LoginResponse> => {
     setLoading(true);
     setError(null);
@@ -31,12 +31,12 @@ export const useLogin = () => {
       await logoutSession();
 
       const { access_token, user } = await authLogin(request);
-      
+
       // Preparar datos para almacenar con tiempo de expiración
       const authData: StoredAuthData = {
         access_token,
         user,
-        expiry: new Date().getTime() + (24 * 60 * 60 * 1000) // 24 horas
+        expiry: new Date().getTime() + 24 * 60 * 60 * 1000, // 24 horas
       };
 
       // Store in localStorage
@@ -50,14 +50,14 @@ export const useLogin = () => {
       });
 
       return { success: true, user };
-
     } catch (error) {
       let errorMessage = "Error al iniciar sesión";
-      
+
       if (error instanceof AxiosError) {
-        errorMessage = error.response?.status === 401 
-          ? "Credenciales inválidas"
-          : error.message || "Error al conectar con el servidor";
+        errorMessage =
+          error.response?.status === 401
+            ? "Credenciales inválidas"
+            : error.message || "Error al conectar con el servidor";
       }
 
       setError(errorMessage);
@@ -66,7 +66,6 @@ export const useLogin = () => {
       });
 
       return { success: false, error: errorMessage };
-
     } finally {
       setLoading(false);
     }
@@ -88,7 +87,7 @@ export const useLogin = () => {
 
       // Limpiar localStorage
       localStorage.removeItem("login-token");
-      
+
       // Limpiar estado global
       logout();
 
@@ -104,15 +103,17 @@ export const useLogin = () => {
 
   const loadSession = useCallback((): boolean => {
     const storedData = localStorage.getItem("login-token");
-    
+
     if (!storedData) {
       logout();
       return false;
     }
 
     try {
-      const { access_token, user, expiry } = JSON.parse(storedData) as StoredAuthData;
-      
+      const { access_token, user, expiry } = JSON.parse(
+        storedData
+      ) as StoredAuthData;
+
       // Verificar si la sesión ha expirado
       if (expiry && new Date().getTime() > expiry) {
         toast.warning("Sesión expirada", {
@@ -145,6 +146,7 @@ export const useLogin = () => {
   };
 
   return {
+    login,
     loading,
     error,
     loginProcess,
