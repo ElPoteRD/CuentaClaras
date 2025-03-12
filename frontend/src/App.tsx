@@ -13,7 +13,7 @@ import Configuration from "./page/configuration/Configuration";
 import Caracteristcas from "./components/caracteristica";
 import { AccountDetail } from "./page/account/[id]/page";
 import { About } from "./components/about";
-
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   return (
@@ -22,20 +22,23 @@ function App() {
         <Route path="/" element={<Home />}></Route>
         <Route path="/login" element={<Login />}></Route>
         <Route path="/register" element={<Register />}></Route>
-        <Route path="/dashboard" element={<Dashboard />}></Route>
-        <Route path="/account" element={<Account />}></Route>
-        <Route path="/profile" element={<Profile />}></Route>
-        <Route path="/income" element={<Income />}></Route>
-        <Route path="/expense" element={<Expense />}></Route>
-        <Route path="/report" element={<Reporte />}></Route>
-        <Route path="/configuration" element={<Configuration />}></Route>
-        <Route path="/caracteristicas" element={<Caracteristcas />}></Route>
-        <Route path="/account/:id" element={<AccountDetail />}></Route>
         <Route path="/about" element={<About />}></Route>
-
-
       </Routes>
       <Toaster position="top-right" />
+
+      <PrivateRoute>
+        <Routes>
+          <Route path="/dashboard" element={<Dashboard />}></Route>
+          <Route path="/account" element={<Account />}></Route>
+          <Route path="/profile" element={<Profile />}></Route>
+          <Route path="/income" element={<Income />}></Route>
+          <Route path="/expense" element={<Expense />}></Route>
+          <Route path="/report" element={<Reporte />}></Route>
+          <Route path="/configuration" element={<Configuration />}></Route>
+          <Route path="/caracteristicas" element={<Caracteristcas />}></Route>
+          <Route path="/account/:id" element={<AccountDetail />}></Route>
+        </Routes>
+      </PrivateRoute>
     </>
   )
 }

@@ -96,6 +96,12 @@ export class TransactionService {
     updateTransactionDto: UpdateTransactionDto,
   ) {
     try {
+      const originalTransaction = await this.prisma.transaction.findUnique({
+        where: { id },
+      });
+      if (!originalTransaction) {
+        throw new NotFoundException('Transaction not found');
+      }
       const updateTransaction = await this.prisma.transaction.update({
         where: { id },
         data: {
@@ -105,8 +111,33 @@ export class TransactionService {
           categoryId: updateTransactionDto.categoryId,
         },
       });
-      if (!updateTransaction) {
-        throw new NotFoundException('Transaction not found');
+      const amountDifference =
+        updateTransactionDto.amount - originalTransaction.amount;
+      if (
+        amountDifference !== 0 ||
+        updateTransactionDto.type !== originalTransaction.type
+      ) {
+        if (updateTransactionDto.type !== originalTransaction.type) {
+          await this.accout.updateAccountBalance(
+            originalTransaction.accountId,
+            originalTransaction.type === 'Ingreso'
+              ? -originalTransaction.amount
+              : originalTransaction.amount,
+            originalTransaction.type === 'Ingreso' ? 'Gasto' : 'Ingreso',
+          );
+
+          await this.accout.updateAccountBalance(
+            originalTransaction.accountId,
+            updateTransactionDto.amount,
+            updateTransactionDto.type,
+          );
+        } else {
+          await this.accout.updateAccountBalance(
+            originalTransaction.accountId,
+            amountDifference,
+            updateTransactionDto.type,
+          );
+        }
       }
       return updateTransaction;
     } catch (error) {
@@ -128,24 +159,27 @@ export class TransactionService {
         },
         include: { account: true },
       });
-
       if (!deleteTransaction) {
         throw new NotFoundException('Transaction not found');
       }
-
-      // Si es un ingreso, restamos el monto (negativo)
-      // Si es un gasto, sumamos el monto (positivo)
       const adjustedAmount =
         deleteTransaction.type === 'Ingreso'
           ? -deleteTransaction.amount
           : deleteTransaction.type === 'Gasto'
-            ? +deleteTransaction.amount
-            : deleteTransaction.amount;
+            ? deleteTransaction.amount
+            : 0;
+
+      const adjustmentType =
+        deleteTransaction.type === 'Ingreso'
+          ? 'Gasto'
+          : deleteTransaction.type === 'Gasto'
+            ? 'Ingreso'
+            : deleteTransaction.type;
 
       await this.accout.updateAccountBalance(
         deleteTransaction.accountId,
-        adjustedAmount,
-        deleteTransaction.type,
+        Math.abs(adjustedAmount),
+        adjustmentType,
       );
 
       return deleteTransaction;

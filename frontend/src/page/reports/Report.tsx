@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Download, FileSpreadsheet, FileText, } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -9,7 +9,6 @@ import Layout from "../Layout"
 import { useTransaction } from "@/hooks/use-transaction"
 import { useAccount } from "@/hooks/use-account"
 import { generatePDF, generateExcel } from "@/service/report-service"
-
 import type { DateRange } from "react-day-picker"
 
 export default function Reporte() {

@@ -12,7 +12,7 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { AccountService } from './account.service';
-import { CreateAccountDto, DeleteAccountDto } from './dto/create-account.dto';
+import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -75,9 +75,8 @@ export class AccountController {
   @ApiResponse({ status: 404, description: 'Account not found' })
   async deleteAccount(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: DeleteAccountDto,
 
   ) {
-    return await this.accountService.deleteAccount(id, data);
+    return await this.accountService.deleteAccount(id);
   }
 }

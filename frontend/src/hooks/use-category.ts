@@ -2,16 +2,20 @@ import { useState, useCallback, useEffect } from "react";
 import { toast } from "sonner";
 import { categoryService } from "@/service/category-service";
 import { CategoryEntity } from "@/entities/category";
+import { useProfile } from "./use-profile";
 export const useCategory = () => {
   const [categories, setCategories] = useState<CategoryEntity[]>([]);
   const [selectedCategory, setSelectedCategory] =
     useState<CategoryEntity | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const { refreshProfile } = useProfile();
   const getToken = () => {
     const storedData = localStorage.getItem("login-token");
-    if (!storedData) throw new Error("No hay sesión activa");
+    if (!storedData) {
+      refreshProfile();
+      throw new Error("No hay sesión activa");
+    }
     return JSON.parse(storedData).access_token;
   };
 

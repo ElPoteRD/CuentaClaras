@@ -41,11 +41,4 @@ export class CreateAccountDto {
   userId: number;
 }
 
-export class DeleteAccountDto {
-  @ApiProperty({
-    description: 'ID de la cuenta a eliminar',
-    example: 1,
-  })
-  @IsNumber()
-  accountId: number;
-}
+

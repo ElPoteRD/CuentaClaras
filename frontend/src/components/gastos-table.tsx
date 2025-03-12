@@ -23,6 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { EditGastoModal } from "./use-edits";
 
 
 
@@ -30,6 +31,7 @@ export function GastosTable() {
   const { transactions, deleteTransaction, fetchTransactions, isLoading, error, } = useTransaction();
   const { accounts, refetchAccounts } = useAccount();
   const [openAlert, setOpenAlert] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [selectedGasto, setSelectedGasto] = useState<any>(null);
   const [gastos, setGastos] = useState<any[]>([]);
 
@@ -87,6 +89,15 @@ export function GastosTable() {
       setOpenAlert(false);
       setSelectedGasto(null);
     }
+  };
+  const handleEditClick = (gasto: any) => {
+    const account = accounts.find(acc => acc.id === gasto.accountId);
+    const enrichedGasto = {
+      ...gasto,
+      account: account || { currency: "USD", name: "Unknown Account" },
+    };
+    setSelectedGasto(enrichedGasto);
+    setIsEditModalOpen(true);
   };
 
   return (
@@ -187,7 +198,7 @@ export function GastosTable() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                        <DropdownMenuItem >
+                        <DropdownMenuItem onClick={() => handleEditClick(gasto)} >
                           <Pencil className="mr-2 h-4 w-4" />
                           <span>Editar</span>
                         </DropdownMenuItem>
@@ -207,6 +218,15 @@ export function GastosTable() {
             )}
           </TableBody>
         </Table>
+        <EditGastoModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setSelectedGasto(null);
+            fetchTransactions(); // Refresh data after editing
+          }}
+          transaction={selectedGasto}
+        />
       </div>
     </>
   );

@@ -168,7 +168,7 @@ export function AccountDetail() {
               </AlertDialog>
               <Button
                 variant="destructive"
-                onClick={() => setIsDeleteModalOpen(true)}
+                onClick={() => setIsDeleteModalOpen(accounts)}
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Eliminar
