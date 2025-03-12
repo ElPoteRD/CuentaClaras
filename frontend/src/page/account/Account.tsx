@@ -12,6 +12,8 @@ import Layout from "../Layout"
 import { NewCategoryModal } from "@/components/new-category-modal";
 import { useCategory } from "@/hooks/use-category";
 
+import { useProfile } from "@/hooks/use-profile"
+
 export default function Account() {
     const navigate = useNavigate()
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -19,20 +21,20 @@ export default function Account() {
     const [loading, setLoading] = useState(true)
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
-
+    const { refreshProfile } = useProfile()
     const {
         accounts,
         error,
         refreshAccounts
     } = useAccount()
     const { categories, fetchCategories } = useCategory();
-
     // Efecto para cargar las cuentas
     useEffect(() => {
         if (accounts.length > 0) {
             setLoading(false);
+            refreshProfile();
         }
-    }, [accounts]);
+    }, [accounts, refreshProfile]);
 
     // Efecto para cargar las categorías
     useEffect(() => {
@@ -76,13 +78,13 @@ export default function Account() {
 
     function getAccountTypeIcon(type: string): import("react").ReactNode {
         switch (type) {
-            case "Crédito":
+            case "crédito":
                 return <CreditCard className="h-6 w-6 text-primary" />;
-            case "Efectivo":
+            case "efectivo":
                 return <Wallet className="h-6 w-6 text-primary" />;
-            case "Banco":
+            case "banco":
                 return <Building2 className="h-6 w-6 text-primary" />;
-            case "Inversión":
+            case "inversión":
                 return <PiggyBank className="h-6 w-6 text-primary" />;
             default:
                 return <PlusCircle className="h-6 w-6 text-primary" />;
@@ -133,9 +135,39 @@ export default function Account() {
                             <CardDescription>Suma de todos tus activos y pasivos</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold">
-                                ${(accounts.length > 0 ? totalBalance : 0).toFixed(2)}
-                            </div>
+                            {accounts.length > 0 ? (
+                                <div className="space-y-3">
+                                    {/* Group accounts by currency and calculate totals */}
+                                    {Object.entries(
+                                        accounts.reduce((acc, account) => {
+                                            const currency = account.currency || 'USD';
+                                            if (!acc[currency]) acc[currency] = 0;
+                                            acc[currency] += account.type === "crédito"
+                                                ? -account.initialBalance
+                                                : account.initialBalance;
+                                            return acc;
+                                        }, {} as Record<string, number>)
+                                    ).map(([currency, amount]) => (
+                                        <div key={currency} className="flex justify-between items-center border-b pb-2 last:border-0">
+                                            <span className="font-medium">{currency}</span>
+                                            <span className="text-2xl font-bold">
+                                                {new Intl.NumberFormat('es-ES', {
+                                                    style: 'currency',
+                                                    currency: currency,
+                                                }).format(amount)}
+                                            </span>
+                                        </div>
+                                    ))}
+                                    <div className="pt-2 mt-2 border-t border-muted">
+                                        <div className="text-sm text-muted-foreground">Balance total (todas las monedas)</div>
+                                        <div className="text-3xl font-bold">
+                                            ${totalBalance.toFixed(2)}
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-3xl font-bold">$0.00</div>
+                            )}
                         </CardContent>
                     </Card>
 

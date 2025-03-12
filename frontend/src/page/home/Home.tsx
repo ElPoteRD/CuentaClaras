@@ -19,13 +19,22 @@ import {
   LineChart,
   ShieldCheck,
   Menu,
+  X,
 } from "lucide-react";
 import LogoC from "../../assets/CuentaClarasIcon.svg";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+
 export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="px-4 lg:px-6 h-14 flex items-center my-2">
+      <header className="px-4 lg:px-6 h-14 flex items-center my-2 relative">
         <Link className="flex items-center justify-center" to="/">
           <div className="flex justify-start rounded-md">
             <img src={LogoC} className="h-[50px] w-[50px]" />
@@ -45,10 +54,53 @@ export default function Home() {
           >
             Sobre Nosotros
           </Link>
-          <Button variant="outline" size="icon" className="sm:hidden">
-            <Menu className="h-4 w-4" />
-            <span className="sr-only">Toggle menu</span>
-          </Button>
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon" className="sm:hidden" onClick={toggleMobileMenu}>
+                {mobileMenuOpen ? (
+                  <X className="h-4 w-4" />
+                ) : (
+                  <Menu className="h-4 w-4" />
+                )}
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[250px] sm:hidden">
+              <SheetHeader className="mb-6">
+                <SheetTitle>Menú</SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col space-y-4">
+                <Link
+                  className="text-sm font-medium hover:text-primary"
+                  to="/caracteristicas"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Características
+                </Link>
+                <Link
+                  className="text-sm font-medium hover:text-primary"
+                  to="/about"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Sobre Nosotros
+                </Link>
+                <Link
+                  className="text-sm font-medium hover:text-primary"
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Iniciar Sesión
+                </Link>
+                <Link
+                  className="text-sm font-medium hover:text-primary"
+                  to="/register"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Registrarse
+                </Link>
+              </div>
+            </SheetContent>
+          </Sheet>
         </nav>
       </header>
       <main className="flex-1">

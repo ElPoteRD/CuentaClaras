@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { TransactionEntity, updateTransaction } from "@/entities/transaction";
 import { transactionService } from "@/service/transaction-service";
 import { useAccount } from "@/hooks/use-account"; // Importa el hook useAccount
+import { useProfile } from "./use-profile";
 
 export const useTransaction = () => {
   const [transactions, setTransactions] = useState<TransactionEntity[]>([]);
@@ -12,7 +13,8 @@ export const useTransaction = () => {
   const [error, setError] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
-  const { refetchAccounts } = useAccount(); // Obtén la función fetchAccounts del hook useAccount
+  const { refetchAccounts } = useAccount();
+  const { refreshProfile } = useProfile();
 
   const getToken = useCallback(() => {
     try {
@@ -57,7 +59,10 @@ export const useTransaction = () => {
   const refreshTransactions = async () => {
     setIsLoading(true);
     try {
-      await Promise.all([fetchTransactions(), refetchAccounts()]);
+      await Promise.all([
+        fetchTransactions(),
+        refetchAccounts(),
+      ]);
       setError(null);
     } catch (err) {
       setError(

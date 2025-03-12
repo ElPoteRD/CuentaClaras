@@ -38,8 +38,6 @@ export function IngresosTable() {
     fetchTransactions();
   }, [fetchTransactions]);
 
-  const transacciones = selectedIngreso ? transactions?.find(acc => acc.id === selectedIngreso.id) : null;
-  // Efecto para filtrar y actualizar ingresos cuando cambien las transacciones
   useEffect(() => {
     const filteredIngresos = transactions.filter(
       (transaction) => transaction.type === "Ingreso"
@@ -89,9 +87,15 @@ export function IngresosTable() {
     }
   };
   const handleEditClick = (ingreso: any) => {
-    setSelectedIngreso(ingreso);
+    const account = accounts.find(acc => acc.id === ingreso.accountId);
+    const enrichedIngreso = {
+      ...ingreso,
+      account: account || { currency: 'USD', name: 'Unknown Account' }
+    };
+    setSelectedIngreso(enrichedIngreso);
     setIsEditModalOpen(true);
   };
+  
   if (error) {
     return <div className="text-center text-red-500 p-4">{error}</div>;
   }
@@ -217,8 +221,12 @@ export function IngresosTable() {
         </Table>
         <EditIngresoModal
           isOpen={isEditModalOpen}
-          onClose={() => setIsEditModalOpen(false)}
-          transaction={transacciones || null}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setSelectedIngreso(null);
+            fetchTransactions(); // Refresh data after editing
+          }}
+          transaction={selectedIngreso}
         />
       </div>
     </>

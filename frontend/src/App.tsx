@@ -13,7 +13,7 @@ import Configuration from "./page/configuration/Configuration";
 import Caracteristcas from "./components/caracteristica";
 import { AccountDetail } from "./page/account/[id]/page";
 import { About } from "./components/about";
-
+import PrivatePage from "./page/PrivatePage";
 
 function App() {
   return (
@@ -22,6 +22,7 @@ function App() {
         <Route path="/" element={<Home />}></Route>
         <Route path="/login" element={<Login />}></Route>
         <Route path="/register" element={<Register />}></Route>
+        <Route path="/about" element={<About />}></Route>
         <Route path="/dashboard" element={<Dashboard />}></Route>
         <Route path="/account" element={<Account />}></Route>
         <Route path="/profile" element={<Profile />}></Route>
@@ -31,13 +32,13 @@ function App() {
         <Route path="/configuration" element={<Configuration />}></Route>
         <Route path="/caracteristicas" element={<Caracteristcas />}></Route>
         <Route path="/account/:id" element={<AccountDetail />}></Route>
-        <Route path="/about" element={<About />}></Route>
+        <Route path="*" element={<PrivatePage />} />
+      </Routes >
 
-
-      </Routes>
       <Toaster position="top-right" />
     </>
-  )
+  );
 }
 
 export default App
+

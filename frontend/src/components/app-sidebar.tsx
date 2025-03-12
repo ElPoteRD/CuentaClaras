@@ -54,7 +54,11 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="flex justify-center items-center">
-        <img src={cuentaLogo} className="justify-center w-[100px] h-auto" />
+        <img
+          src={cuentaLogo}
+          className=" justify-center w-[100px] h-auto"
+        />
+
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -159,7 +163,8 @@ export function AppSidebar() {
                 <AvatarImage src="" alt="Usuario" />
                 <AvatarFallback>
                   {profile?.firstName?.charAt(0)?.toUpperCase()}
-                  {profile?.lastName?.charAt(0)?.toUpperCase() || ''}</AvatarFallback>
+                  {profile?.lastName?.charAt(0)?.toUpperCase() || ""}
+                </AvatarFallback>
               </Avatar>
               <span>Mi Cuenta</span>
             </Button>
@@ -174,11 +179,9 @@ export function AppSidebar() {
               </DropdownMenuItem>
             </Link>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}
-              className="cursor-pointer">
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
               <LogOut className="mr-2 h-4 w-4" />
-              <span
-              >Cerrar Sesión</span>
+              <span>Cerrar Sesión</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

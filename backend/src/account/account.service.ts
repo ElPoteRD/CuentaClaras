@@ -1,8 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateAccountDto, DeleteAccountDto } from './dto/create-account.dto';
+import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { PrismaService } from 'src/database/prisma.service';
-import * as bcrypt from 'bcrypt';
 import { AccountEntity } from './entities/account.entity';
 import { TransactionType } from '@prisma/client';
 
@@ -181,17 +180,16 @@ export class AccountService {
    */
   async deleteAccount(
     id: number,
-    data: DeleteAccountDto,
   ): Promise<AccountEntity> {
     try {
       // First delete related transactions
       await this.prisma.transaction.deleteMany({
-        where: { accountId: data.accountId },
+        where: { accountId: id },
       });
 
       // Then delete the account
       const deletedAccount = await this.prisma.account.delete({
-        where: { id: data.accountId },
+        where: { id: id },
       });
       if (!deletedAccount)
         throw new HttpException('Account not found', HttpStatus.NOT_FOUND);

@@ -12,6 +12,7 @@ import useStore from "@/context/useStore";
 import { useLogin } from "./use-login";
 import * as accountService from "@/service/account-service";
 import { useNavigate } from "react-router-dom";
+import { useProfile } from "./use-profile";
 
 export const useAccount = () => {
   const [accounts, setAccounts] = useState<AccountEntity[]>([]);
@@ -21,10 +22,11 @@ export const useAccount = () => {
   const navigate = useNavigate();
   const { logout } = useStore();
   const { logoutSession } = useLogin();
+  const { refreshProfile } = useProfile();
 
   useEffect(() => {
     handleGetAccounts();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleGetAccounts = async () => {
@@ -40,6 +42,7 @@ export const useAccount = () => {
         if (err.response?.status === 401) {
           logoutSession();
           logout();
+          refreshProfile();
           toast.error("Su sesión ha expirado");
           navigate("/");
         } else {
@@ -55,12 +58,21 @@ export const useAccount = () => {
     }
   };
 
-  const handleCreateAccount = async (accountData: Omit<AccountEntity, "id" | "creationDate">) => {
+  const handleCreateAccount = async (
+    accountData: Omit<AccountEntity, "id" | "creationDate">
+  ) => {
     setIsLoading(true);
     try {
       const existToken = JSON.parse(localStorage.getItem("login-token") ?? "");
-      const newAccountData: AccountEntity = { ...accountData, id: 0, creationDate: new Date() };
-      const response = await createAccount(newAccountData, existToken.access_token);
+      const newAccountData: AccountEntity = {
+        ...accountData,
+        id: 0,
+        creationDate: new Date(),
+      };
+      const response = await createAccount(
+        newAccountData,
+        existToken.access_token
+      );
       await handleGetAccounts();
       toast.success("Cuenta creada exitosamente");
       return response.data;
@@ -85,11 +97,18 @@ export const useAccount = () => {
     }
   };
 
-  const handleUpdateAccount = async (id: number, accountData: Omit<AccountEntity, "id" | "creationDate">) => {
+  const handleUpdateAccount = async (
+    id: number,
+    accountData: Omit<AccountEntity, "id" | "creationDate">
+  ) => {
     setIsLoading(true);
     try {
       const existToken = JSON.parse(localStorage.getItem("login-token") ?? "");
-      const accountToUpdate: AccountEntity = { ...accountData, id, creationDate: new Date() };
+      const accountToUpdate: AccountEntity = {
+        ...accountData,
+        id,
+        creationDate: new Date(),
+      };
       await updateAccount(id, accountToUpdate, existToken.access_token);
       await handleGetAccounts();
       toast.success("Cuenta actualizada exitosamente");
@@ -113,12 +132,12 @@ export const useAccount = () => {
     }
   };
 
-  const handleDeleteAccount = async (accountId: number) => {
+  const handleDeleteAccount = async (id: number) => {
     setIsLoading(true);
     try {
       const existToken = JSON.parse(localStorage.getItem("login-token") ?? "");
-      await deleteAccount(existToken.access_token, accountId);
-      setAccounts(prev => prev.filter(acc => acc.id !== accountId));
+      await deleteAccount(id, existToken.access_token);
+      setAccounts((prev) => prev.filter((acc) => acc.id !== id));
       toast.success("Cuenta eliminada correctamente");
       return true;
     } catch (err) {
@@ -136,7 +155,9 @@ export const useAccount = () => {
     // Lógica para recargar las cuentas y sus balances
     try {
       const existToken = JSON.parse(localStorage.getItem("login-token") ?? "");
-      const response = await accountService.getAllAccount(existToken.access_token);
+      const response = await accountService.getAllAccount(
+        existToken.access_token
+      );
       setAccounts(response.data);
     } catch (error) {
       toast.error("Error al actualizar los balances");
@@ -152,6 +173,6 @@ export const useAccount = () => {
     updateAccount: handleUpdateAccount,
     deleteAccount: handleDeleteAccount,
     refreshAccounts: handleGetAccounts,
-    refetchAccounts
+    refetchAccounts,
   };
 };

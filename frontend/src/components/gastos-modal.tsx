@@ -76,8 +76,8 @@ export function AgregarGastoModal({ isOpen, onClose }: AgregarGastoModalProps) {
         userId: user.id
       };
 
-      console.log('Datos de la transacción:', transactionData); 
-      
+      console.log('Datos de la transacción:', transactionData);
+
       await createTransaction(transactionData);
       toast.success("Gasto registrado exitosamente");
 
@@ -96,7 +96,30 @@ export function AgregarGastoModal({ isOpen, onClose }: AgregarGastoModalProps) {
       toast.error("Error al registrar el ingreso");
     }
   };
-
+  if (accounts.length === 0) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-red-600 py-3">Algo salio mal😓</DialogTitle>
+          </DialogHeader>
+          <div className="p-6 text-center bg-amber-50 rounded-lg border border-amber-200 shadow-sm">
+            <div className="flex flex-col items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-500">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <h3 className="text-lg font-medium text-amber-800">No hay cuentas disponibles</h3>
+              <p className="text-amber-700">
+                Por favor, agrega una cuenta antes de registrar un Gasto.
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
